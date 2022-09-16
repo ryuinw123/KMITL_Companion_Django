@@ -1,0 +1,14 @@
+django-admin startproject (..)
+
+python manage.py migrate
+
+python manage.py runserver
+
+============================
+
+python manage.py startapp (...)
+
+++++++++++++++++++++++++++++++
+django-admin startapp api
+
+
