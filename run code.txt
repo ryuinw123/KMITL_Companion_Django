@@ -12,3 +12,7 @@ python manage.py startapp (...)
 django-admin startapp api
 
 
+เรียกดู model
+
+python manage.py inspectdb > models.py
+

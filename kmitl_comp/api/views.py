@@ -1,8 +1,11 @@
 from django.shortcuts import render
 from django.http import HttpResponse
-from . import models
+from .models import *
 
 # Create your views here.
 
 def helloWorld(request):
-    return HttpResponse("")
+    user = User.objects.all()[0].student_id
+
+
+    return HttpResponse(user)

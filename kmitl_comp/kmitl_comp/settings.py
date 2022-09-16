@@ -82,6 +82,12 @@ DATABASES = {
         'PASSWORD': '12345',
         'HOST': 'shitduck.duckdns.org',
         'PORT': '3306',
+        # 'ENGINE': 'django.db.backends.mysql',
+        # 'NAME': 'payroll',
+        # 'USER': 'root',
+        # 'PASSWORD': '',
+        # 'HOST': 'localhost',
+        # 'PORT': '3306',
         #"OPTIONS": {"driver": "ODBC Driver 13 for SQL Server",},#บรรทัดนี้ก๊อบเค้ามา
     }
 }
