@@ -52,9 +52,7 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
 ]
 
-CORS_ALLOWED_ORIGINS = [
-    'http://shitduck.duckdns.org:8000',
-]
+CORS_ORIGIN_ALLOW_ALL = True
 
 ROOT_URLCONF = 'kmitl_comp.urls'
 
