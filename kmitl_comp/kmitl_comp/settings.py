@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-p_z(2uufu@to6ak^&8v9a97aa73z#lb+8ucu=w!8pyl1c0l)3i
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['shitduck.duckdns.org:8000']
+ALLOWED_HOSTS = ['shitduck.duckdns.org']
 #CORS_ORIGIN_ALLOW_ALL = True
 # Application definition
 
