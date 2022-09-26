@@ -78,9 +78,9 @@ WSGI_APPLICATION = 'kmitl_comp.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'kmitl_comp',
+        'NAME': 'pokemon',
         'USER': 'pokemon',
-        'PASSWORD': '12345',
+        'PASSWORD': 'admin12345',
         'HOST': 'shitduck.duckdns.org',
         'PORT': '3306',
         # 'ENGINE': 'django.db.backends.mysql',
