@@ -15,10 +15,11 @@ CLIENT_ID = "27567133155-3gsequ5o2m08cnj6vnqgdllkv7tabobg.apps.googleusercontent
 
 #get
 def helloWorld(request):
-    user = User.objects.all()[0].student_id
+    x = [{"name":"John", "id":30, "latitude":"13.779677724153272" , "longitude" : "100.67650630259816","description" : "noob"} , {"name":"Cena", "id":31, "latitude":"13.779677724153272" , "longitude" : "100.97650630259816","description" : "noob2"}]
 
-
-    return HttpResponse(user)
+    return JsonResponse(x,safe = False)
+    #user = User.objects.all()[0].student_id
+    #return HttpResponse(user)
 
 @csrf_exempt
 def testToken(request):
