@@ -22,43 +22,43 @@ def helloWorld(request):
 
 @csrf_exempt
 def testToken(request):
+    if request.method == 'POST':
+        token = json.loads(request.body)['token']
+        print(token)
 
-    token = request.POST["token"]
+        response_data = {}
+        response_data['token'] = token
 
-    response_data = {}
-    response_data['token'] = token
-
-    return HttpResponse(json.dumps(response_data), content_type="application/json")
-
+        return HttpResponse(json.dumps(response_data), content_type="application/json")
 
 
 @csrf_exempt
 def checkToken(request):
-    
-    try:
-        token = request.POST["token"]
+    if request.method == 'POST':
+        try:
+            token = json.loads(request.body)['token']
 
-        # Specify the CLIENT_ID of the app that accesses the backend:
-        idinfo = id_token.verify_oauth2_token(token, requests.Request(), CLIENT_ID)
+            # Specify the CLIENT_ID of the app that accesses the backend:
+            idinfo = id_token.verify_oauth2_token(token, requests.Request(), CLIENT_ID)
 
-        # Or, if multiple clients access the backend server:
-        # idinfo = id_token.verify_oauth2_token(token, requests.Request())
-        # if idinfo['aud'] not in [CLIENT_ID_1, CLIENT_ID_2, CLIENT_ID_3]:
-        #     raise ValueError('Could not verify audience.')
+            # Or, if multiple clients access the backend server:
+            # idinfo = id_token.verify_oauth2_token(token, requests.Request())
+            # if idinfo['aud'] not in [CLIENT_ID_1, CLIENT_ID_2, CLIENT_ID_3]:
+            #     raise ValueError('Could not verify audience.')
 
-        # If auth request is from a G Suite domain:
-        # if idinfo['hd'] != GSUITE_DOMAIN_NAME:
-        #     raise ValueError('Wrong hosted domain.')
+            # If auth request is from a G Suite domain:
+            # if idinfo['hd'] != GSUITE_DOMAIN_NAME:
+            #     raise ValueError('Wrong hosted domain.')
 
-        # ID token is valid. Get the user's Google Account ID from the decoded token.
-        userid = idinfo['sub']
-        
-        response_data = {}
-        response_data['token'] = token
-        response_data['sub'] = userid
+            # ID token is valid. Get the user's Google Account ID from the decoded token.
+            userid = idinfo['sub']
+            
+            response_data = {}
+            response_data['token'] = token
+            response_data['sub'] = userid
 
-        return HttpResponse(json.dumps(response_data), content_type="application/json")
-    except ValueError:
-        # Invalid token
-        return "error"
+            return HttpResponse(json.dumps(response_data), content_type="application/json")
+        except ValueError:
+            # Invalid token
+            return "error"
         
