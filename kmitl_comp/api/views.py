@@ -46,7 +46,7 @@ def checkToken(request):
 
         response_data = {}
         response_data['token'] = token
-        response_data['sub'] = str(auth_userdata)
+        response_data['auth_userdata'] = str(auth_userdata)
         print(response_data)
 
         return HttpResponse(json.dumps(response_data), content_type="application/json")
