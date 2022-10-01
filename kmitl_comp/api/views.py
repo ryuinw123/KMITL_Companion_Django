@@ -35,32 +35,20 @@ def testToken(request):
 @csrf_exempt
 def checkToken(request):
     if request.method == 'POST':
-        try:
-            token = json.loads(request.body)['token']
 
-            print(token)
-            # Specify the CLIENT_ID of the app that accesses the backend:
-            idinfo = id_token.verify_oauth2_token(token, requests.Request(), CLIENT_ID)
+        token = json.loads(request.body)['token']
+        request = requests.Request()
 
-            # Or, if multiple clients access the backend server:
-            # idinfo = id_token.verify_oauth2_token(token, requests.Request())
-            # if idinfo['aud'] not in [CLIENT_ID_1, CLIENT_ID_2, CLIENT_ID_3]:
-            #     raise ValueError('Could not verify audience.')
+        id_info = id_token.verify_oauth2_token(token, request, '27567133155-3gsequ5o2m08cnj6vnqgdllkv7tabobg.apps.googleusercontent.com')
 
-            # If auth request is from a G Suite domain:
-            # if idinfo['hd'] != GSUITE_DOMAIN_NAME:
-            #     raise ValueError('Wrong hosted domain.')
+        auth_userdata = id_info
 
-            # ID token is valid. Get the user's Google Account ID from the decoded token.
-            userid = idinfo['sub']
-            
-            response_data = {}
-            response_data['token'] = token
-            response_data['sub'] = userid
-            print(response_data)
 
-            return HttpResponse(json.dumps(response_data), content_type="application/json")
-        except ValueError:
-            # Invalid token
-            return "error"
+        response_data = {}
+        response_data['token'] = token
+        response_data['sub'] = str(auth_userdata)
+        print(response_data)
+
+        return HttpResponse(json.dumps(response_data), content_type="application/json")
+
         
