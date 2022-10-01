@@ -38,6 +38,7 @@ def checkToken(request):
         try:
             token = json.loads(request.body)['token']
 
+            print(token)
             # Specify the CLIENT_ID of the app that accesses the backend:
             idinfo = id_token.verify_oauth2_token(token, requests.Request(), CLIENT_ID)
 
@@ -56,6 +57,7 @@ def checkToken(request):
             response_data = {}
             response_data['token'] = token
             response_data['sub'] = userid
+            print(response_data)
 
             return HttpResponse(json.dumps(response_data), content_type="application/json")
         except ValueError:
