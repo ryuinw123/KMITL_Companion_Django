@@ -9,8 +9,6 @@ from django.views.decorators.csrf import csrf_exempt
 from google.oauth2 import id_token
 from google.auth.transport import requests
 
-# Create your views here.
-
 CLIENT_ID = "27567133155-3gsequ5o2m08cnj6vnqgdllkv7tabobg.apps.googleusercontent.com"
 
 #get
@@ -22,6 +20,36 @@ def helloWorld(request):
     #return HttpResponse(user)
 
 @csrf_exempt
+def checkToken(request):
+    if request.method == 'POST':
+
+        token = json.loads(request.body)['token']
+        request = requests.Request()
+
+        ####
+        response_data = {}
+
+        try:
+            id_info = id_token.verify_oauth2_token(token, request, CLIENT_ID)
+
+            auth_userdata = id_info
+
+            response_data = {}
+            response_data['token'] = token
+            response_data['auth_userdata'] = str(auth_userdata)
+            response_data['validate'] = True
+            print(response_data)
+
+            return HttpResponse(json.dumps(response_data), content_type="application/json")
+        except Exception as e:
+
+            response_data['validate'] = False
+            print(e)
+            return HttpResponse(json.dumps(response_data), content_type="application/json")
+
+
+      
+@csrf_exempt
 def testToken(request):
     if request.method == 'POST':
         token = json.loads(request.body)['token']
@@ -32,24 +60,3 @@ def testToken(request):
 
         return HttpResponse(json.dumps(response_data), content_type="application/json")
 
-
-@csrf_exempt
-def checkToken(request):
-    if request.method == 'POST':
-
-        token = json.loads(request.body)['token']
-        request = requests.Request()
-
-        id_info = id_token.verify_oauth2_token(token, request, '27567133155-3gsequ5o2m08cnj6vnqgdllkv7tabobg.apps.googleusercontent.com')
-
-        auth_userdata = id_info
-
-
-        response_data = {}
-        response_data['token'] = token
-        response_data['auth_userdata'] = str(auth_userdata)
-        print(response_data)
-
-        return HttpResponse(json.dumps(response_data), content_type="application/json")
-
-        
