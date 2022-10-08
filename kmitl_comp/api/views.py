@@ -9,7 +9,7 @@ from django.views.decorators.csrf import csrf_exempt
 from google.oauth2 import id_token
 from google.auth.transport import requests
 
-CLIENT_ID = "27567133155-3gsequ5o2m08cnj6vnqgdllkv7tabobg.apps.googleusercontent.com"
+CLIENT_ID = "563509002084-b7m05boiaqs5mo0thi4ka59noiakeus2.apps.googleusercontent.com"
 
 #get
 def helloWorld(request):
