@@ -5,6 +5,9 @@ import json
 from .models import *
 from django.views.decorators.csrf import csrf_exempt
 
+import string
+import random
+
 #oauth
 from google.oauth2 import id_token
 from google.auth.transport import requests
