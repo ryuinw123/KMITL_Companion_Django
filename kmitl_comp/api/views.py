@@ -3,7 +3,6 @@ from django.http import HttpResponse, HttpResponseBadRequest
 from django.http import JsonResponse
 import json
 
-from h11 import ERROR
 from .models import *
 from django.views.decorators.csrf import csrf_exempt
 
@@ -74,6 +73,8 @@ def checkToken(request):
 
             print(e)
             return HttpResponseBadRequest
+
+
 
 
       
