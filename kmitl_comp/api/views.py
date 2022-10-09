@@ -1,7 +1,9 @@
 from django.shortcuts import render
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseBadRequest
 from django.http import JsonResponse
 import json
+
+from h11 import ERROR
 from .models import *
 from django.views.decorators.csrf import csrf_exempt
 
@@ -50,6 +52,8 @@ def checkToken(request):
         token = json.loads(request.body)['token']
         request = requests.Request()
 
+        print("token",token)
+
         ####
         response_data = {}
 
@@ -62,14 +66,14 @@ def checkToken(request):
             response_data['token'] = token
             response_data['auth_userdata'] = str(auth_userdata)
             response_data['validate'] = True
-            print(response_data)
+            print("response data ",response_data)
 
             return HttpResponse(json.dumps(response_data), content_type="application/json")
+
         except Exception as e:
 
-            response_data['validate'] = False
             print(e)
-            return HttpResponse(json.dumps(response_data), content_type="application/json")
+            return HttpResponseBadRequest
 
 
       
