@@ -11,6 +11,27 @@ from google.auth.transport import requests
 
 CLIENT_ID = "563509002084-b7m05boiaqs5mo0thi4ka59noiakeus2.apps.googleusercontent.com"
 
+
+testlst = [{"name":"John", "id":30, "latitude":"13.779677724153272" , "longitude" : "100.67650630259816","description" : "noob"},{"name":"Cena", "id":31, "latitude":"13.779677724153272" , "longitude" : "100.97650630259816","description" : "noob2"}]
+def helloWorld(request):
+    print(testlst)
+
+    return JsonResponse(testlst,safe = False)
+
+def testpost(request):
+    if request.method == 'POST':
+        data_dict = request.POST
+        print(data_dict)
+        #json_dict = json.loads(request.data)
+        #print(json_dict)
+        letters = string.ascii_lowercase
+        randomword = ''.join(random.choice(letters) for i in range(9))
+        latitude = data_dict['latitude']
+        longitude = data_dict['longitude']
+        testlst.append({"name":randomword, "id":random.randint(1000,2000), "latitude":latitude , "longitude" : longitude,"description" : "noob2"})
+        print(testlst)
+        return HttpResponse('')
+
 #get
 def helloWorld(request):
     x = [{"name":"John", "id":30, "latitude":"13.779677724153272" , "longitude" : "100.67650630259816","description" : "noob"} , {"name":"Cena", "id":31, "latitude":"13.779677724153272" , "longitude" : "100.97650630259816","description" : "noob2"}]
