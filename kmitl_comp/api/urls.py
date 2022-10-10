@@ -8,5 +8,5 @@ urlpatterns = [
     path('helloworld', views.helloWorld),
     path('testtoken', views.testToken),
     path('checktoken', views.checkToken),
-    path('testpost',csrf_exempt(views.testpost))
+    path('testpost',views.testpost)
 ]

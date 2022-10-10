@@ -21,7 +21,8 @@ def helloWorld(request):
     print(testlst)
 
     return JsonResponse(testlst,safe = False)
-
+    
+@csrf_exempt
 def testpost(request):
     if request.method == 'POST':
         data_dict = request.POST
