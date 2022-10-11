@@ -39,37 +39,8 @@ def testpost(request):
 
 @csrf_exempt
 def checkToken(request):
-    if request.method == 'POST':
 
-        data_dict = request.POST
-        print(data_dict)
-
-        token = data_dict['token']
-        token = token[1:-1]
-        request = requests.Request()
-
-        print(token)
-
-        ####
-        response_data = {}
-
-        try:
-            id_info = id_token.verify_oauth2_token(token, request, CLIENT_ID)
-
-            auth_userdata = id_info
-
-            response_data = {}
-            response_data['token'] = token
-            response_data['auth_userdata'] = str(auth_userdata)
-            response_data['validate'] = True
-            #print("response data ",response_data)
-
-            return HttpResponse(json.dumps(response_data), content_type="application/json")
-
-        except Exception as e:
-
-            #print(e)
-            return HttpResponseBadRequest
+    return HttpResponse('hello world')
 
 
 
