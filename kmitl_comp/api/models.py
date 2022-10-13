@@ -6,6 +6,53 @@
 #   * Remove `managed = False` lines if you wish to allow Django to create, modify, and delete the table
 # Feel free to rename the models, but don't rename db_table values or field names.
 from django.db import models
+from singleton_decorator import singleton
+
+#/****** Store Class ********/
+
+@singleton
+class AuthDataStore:
+    def __init__(self):
+        self.name = ""
+        self.hd = ""
+        self.email = ""
+        self.picture = ""
+        self.given_name = ""
+        self.family_name = ""
+        self.locale = ""
+
+    def setName(self,name):
+        self.name = name
+   
+#     # def setGivenName(self,given_name):
+#     #     self.given_name = given_name
+
+#     # def setEmail(self,email):
+#     #     self.email = email
+
+#     # def setGivenName(self,given_name):
+#     #     self.given_name = given_name
+
+#     # def getName(self) -> str:
+#     #     return
+
+
+#/****** Model Class ********/
+
+
+class User(models.Model):
+    student_id = models.IntegerField(primary_key=True)
+    firstname = models.CharField(max_length=255, blank=True, null=True)
+    lastname = models.CharField(max_length=255, blank=True, null=True)
+    email = models.CharField(max_length=255)
+    token = models.CharField(max_length=1280, blank=True, null=True)
+    faculty = models.CharField(max_length=255, blank=True, null=True)
+    department = models.CharField(max_length=255, blank=True, null=True)
+    year = models.IntegerField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'user'
 
 
 class Admin(models.Model):
@@ -272,14 +319,3 @@ class PermissionMarker(models.Model):
         managed = False
         db_table = 'permission_marker'
 
-
-class User(models.Model):
-    student_id = models.IntegerField(primary_key=True)
-    firstname = models.CharField(max_length=255, blank=True, null=True)
-    lastname = models.CharField(max_length=255, blank=True, null=True)
-    email = models.CharField(max_length=255)
-    token = models.CharField(max_length=255, blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'user'

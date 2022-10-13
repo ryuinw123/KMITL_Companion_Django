@@ -5,6 +5,12 @@ from . import views
 from django.views.decorators.csrf import csrf_exempt
 
 urlpatterns = [
+    #UserApi
+    path('login', views.userLogin),
+    path('postuserdata', views.postUserData),
+
+
+    #testapi
     path('helloworld', views.helloWorld),
     path('testtoken', views.testToken),
     path('checktoken', views.checkToken),
