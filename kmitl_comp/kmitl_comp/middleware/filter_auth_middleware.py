@@ -5,6 +5,9 @@ from django.http import HttpResponseBadRequest
 from google.oauth2 import id_token
 from google.auth.transport import requests
 
+from api.models import *
+
+import regex as re
 
 class FilterAuthMiddleware(object):
 
@@ -22,24 +25,34 @@ class FilterAuthMiddleware(object):
         if request.method == 'POST':
             data_dict = request.POST
             print("check auth ! ! ! ....")
-            #print(data_dict)
 
             token = data_dict['token']
-            token = token[1:-1]
-
-            print("Token : ",token,"\n")
-            
+            token = re.sub('["\']', '', token)
+           
             request = requests.Request()
 
             try:
                 id_info = id_token.verify_oauth2_token(token, request, self.CLIENT_ID)
 
                 auth_userdata = id_info
+                hd = auth_userdata['email'].split('@')[-1]
 
-                print("/*************************/\n","Auth Success\n",auth_userdata,"\n/*************************/","\n\n")
+                if hd != "kmitl.ac.th":
+                    print("This not kmitl account")
+                    raise BadRequest('Invalid request')
+
+                print("Token : ",token,"\n")
+                AuthDataStore().token = token
+                AuthDataStore().name = auth_userdata['name']
+                AuthDataStore().email = auth_userdata['email']
+                AuthDataStore().given_name = auth_userdata['given_name']
+                AuthDataStore().family_name = auth_userdata['family_name']
+                AuthDataStore().hd = hd
+
+                print("/*************************/\n","Validation successfully !!\n",auth_userdata,"\n/*************************/","\n\n")
 
             except Exception as e:
-                print("/*************************/\n",e,"\n/*************************/","\n\n")
+                print("/*************************/\n","Validation failed !!\n",e,"\n/*************************/","\n\n")
                 raise BadRequest('You not Login, Invalid request')
 
 
