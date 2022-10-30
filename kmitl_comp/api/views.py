@@ -1,4 +1,6 @@
+from urllib import response
 from django.core.exceptions import BadRequest
+from django.forms import ValidationError
 from django.http import HttpResponse, HttpResponseBadRequest
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -12,12 +14,10 @@ import random
 import regex as re
 
 
-#oauth
-from google.oauth2 import id_token
-from google.auth.transport import requests
-
 #utils
 from .utils import *
+
+import requests as req
 
 
 #/*************************** login method *****************************/
@@ -25,6 +25,7 @@ from .utils import *
 def checkUserHaveData() -> bool:
     student_id_ = AuthDataStore().email.split('@')[0]
     query = User.objects.all().filter(student_id=student_id_).values()
+
     query_list = list(query)
 
     return False if len(query) == 0 else True
@@ -34,13 +35,89 @@ def checkUserHaveData() -> bool:
 def userLogin(request) -> None:
     if request.method == 'POST':
         data_dict = request.POST
-        response = 0
+        status = 0
         
-        if checkUserHaveData() == True:
-            response = 1
+        #Authorization
+        
+        authCode = data_dict['authCode'][1:-1]
 
-        return HttpResponse(response)
+        if len(authCode) <= 73:
+            all_token = google_get_access_token(authCode)
+            refresh_token = "" ##need to fix
+        else:
+            all_token = google_refresh_access_token(authCode)
+            refresh_token = authCode
+            print('false')
+
+        access_token = all_token['access_token']
+
+        google_get_data_from_token(access_token)
+
+        if checkUserHaveData() == True:
+            status = 1
+
+        response = {
+            'status' : status,
+            'refreshToken' : access_token,
+            'email': AuthDataStore().email
+        }
+
+        return JsonResponse(response,safe=False)
     raise BadRequest('This method not support GET request')
+
+def google_get_access_token(code: str) -> str:
+    # Reference: https://developers.google.com/identity/protocols/oauth2/web-server#obtainingaccesstokens
+    data = {
+        'code': code,
+        'client_id': GoogleAuthConsoleData().client_id,
+        'client_secret': GoogleAuthConsoleData().client_secret,
+        'redirect_uri': GoogleAuthConsoleData().redirect_url,
+        'grant_type': 'authorization_code'
+    }
+    response = req.post("https://oauth2.googleapis.com/token", data=data)
+    if not response.ok:
+        raise ValidationError('Failed to obtain access token from Google.')
+    token = response.json()
+    print("access token",token['access_token'])
+
+    return token
+
+def google_refresh_access_token(refresh_token: str) -> str:
+    data = {
+        'client_id': GoogleAuthConsoleData().client_id,
+        'client_secret': GoogleAuthConsoleData().client_secret,
+        'grant_type': 'refresh_token',
+        'refresh_token' : refresh_token
+    }
+    response = req.post("https://oauth2.googleapis.com/token", data=data)
+    if not response.ok:
+        raise ValidationError('Failed to obtain access token from Google with refresh token.')
+    token = response.json()
+    print(token['access_token'])
+
+    return token
+
+def google_get_data_from_token(access_token: str) -> str:
+    data = {
+        'Authorization': 'Bearer ' + access_token
+    }
+    
+    response = req.get("https://www.googleapis.com/oauth2/v2/userinfo",headers=data)
+    print(response.json())
+  
+    if not response.ok:
+        raise ValidationError('Failed to obtain data from Google.')
+    auth_userdata = response.json()
+
+    hd = auth_userdata['email'].split('@')[-1]
+    AuthDataStore().name = auth_userdata['name']
+    AuthDataStore().email = auth_userdata['email']
+    AuthDataStore().given_name = auth_userdata['given_name']
+    AuthDataStore().family_name = auth_userdata['family_name']
+    AuthDataStore().hd = hd
+
+    return auth_userdata
+
 
 
 @csrf_exempt

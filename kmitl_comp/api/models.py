@@ -9,7 +9,12 @@ from django.db import models
 from singleton_decorator import singleton
 
 #/****** Store Class ********/
-
+@singleton
+class GoogleAuthConsoleData:
+    def __init__(self):
+        self.client_id = "563509002084-b7m05boiaqs5mo0thi4ka59noiakeus2.apps.googleusercontent.com"
+        self.client_secret = "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"
+        self.redirect_url = "http://shitduck.duckdns.org:8000/accounts/google/login/callback/"
 @singleton
 class AuthDataStore:
     def __init__(self):

@@ -1,9 +1,12 @@
 from django.core.exceptions import BadRequest
+from django.forms import ValidationError
 from django.http import HttpResponseBadRequest
 
-#oauth
-from google.oauth2 import id_token
-from google.auth.transport import requests
+# #oauth
+# from google.oauth2 import id_token
+# from google.auth.transport import requests
+
+import requests as req
 
 from api.models import *
 
@@ -15,10 +18,9 @@ class FilterAuthMiddleware(object):
         """We allow next_layer to be None because old-style middlewares
         won't accept any argument.
         """
-        self.CLIENT_ID = "563509002084-b7m05boiaqs5mo0thi4ka59noiakeus2.apps.googleusercontent.com"
         self.get_response = next_layer
 
-    def process_request(self, request):
+    def process_request(self, request):#check refresh token
         """Let's handle old-style request processing here, as usual."""
         # check token auth with google
 
@@ -26,34 +28,65 @@ class FilterAuthMiddleware(object):
             data_dict = request.POST
             print("check auth ! ! ! ....")
 
-            token = data_dict['token']
-            token = re.sub('["\']', '', token)
-           
-            request = requests.Request()
+            if 'authCode' in data_dict:
+                return
+            
+            refresh_token = data_dict['token']
+            refresh_token = re.sub('["\']', '', refresh_token)
 
-            try:
-                id_info = id_token.verify_oauth2_token(token, request, self.CLIENT_ID)
+            print("refresh_token",refresh_token)
 
-                auth_userdata = id_info
-                hd = auth_userdata['email'].split('@')[-1]
+            # data = {
+            #     'client_id': GoogleAuthConsoleData().client_id,
+            #     'client_secret': GoogleAuthConsoleData().client_secret,
+            #     'grant_type': 'refresh_token',
+            #     'refresh_token' : refresh_token
+            # }
+            # response = req.post("https://oauth2.googleapis.com/token", data=data)
+            # if not response.ok:
+            #     raise ValidationError('Failed to obtain access token from Google with refresh token.')
+            # access_token = response.json()
+            # return access_token
+            return
 
-                if hd != "kmitl.ac.th":
-                    print("This not kmitl account")
-                    raise BadRequest('Invalid request')
+        # if request.method == 'POST':
+        #     data_dict = request.POST
+        #     print("check auth ! ! ! ....")
 
-                print("Token : ",token,"\n")
-                AuthDataStore().token = token
-                AuthDataStore().name = auth_userdata['name']
-                AuthDataStore().email = auth_userdata['email']
-                AuthDataStore().given_name = auth_userdata['given_name']
-                AuthDataStore().family_name = auth_userdata['family_name']
-                AuthDataStore().hd = hd
+        #     try:
+        #         authCode = data_dict['authCode']
+        #         if authCode != "":
+        #             return
+        #     except:
 
-                print("/*************************/\n","Validation successfully !!\n",auth_userdata,"\n/*************************/","\n\n")
+        #         token = data_dict['token']
+        #         token = re.sub('["\']', '', token)
+            
+        #         request = requests.Request()
 
-            except Exception as e:
-                print("/*************************/\n","Validation failed !!\n",e,"\n/*************************/","\n\n")
-                raise BadRequest('You not Login, Invalid request')
+        #         try:
+        #             id_info = id_token.verify_oauth2_token(token, request, GoogleAuthConsoleData().client_id)
+                    
+
+        #             auth_userdata = id_info
+        #             hd = auth_userdata['email'].split('@')[-1]
+
+        #             if hd != "kmitl.ac.th":
+        #                 print("This not kmitl account")
+        #                 raise BadRequest('Invalid request')
+
+        #             print("Token : ",token,"\n")
+        #             AuthDataStore().name = auth_userdata['name']
+        #             AuthDataStore().email = auth_userdata['email']
+        #             AuthDataStore().given_name = auth_userdata['given_name']
+        #             AuthDataStore().family_name = auth_userdata['family_name']
+        #             AuthDataStore().hd = hd
+
+        #             print("/*************************/\n","Validation successfully !!\n",auth_userdata,"\n/*************************/","\n\n")
+
+        #         except Exception as e:
+        #             print("/*************************/\n","Validation failed !!\n",e,"\n/*************************/","\n\n")
+        #             raise BadRequest('You not Login, Invalid request')
 
 
 
