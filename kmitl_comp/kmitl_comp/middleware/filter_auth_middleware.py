@@ -12,6 +12,9 @@ from api.models import *
 
 import regex as re
 
+#utils
+from .utils import *
+import jwt
 class FilterAuthMiddleware(object):
 
     def __init__(self, next_layer=None):
@@ -20,21 +23,41 @@ class FilterAuthMiddleware(object):
         """
         self.get_response = next_layer
 
+    def jwtDecode(token):
+        return jwt.decode(token, 'secret', algorithms=['HS256'])
+
+    def checkUserHaveDataFromId(student_id_) -> bool:
+        query = User.objects.all().filter(student_id=student_id_).values()
+        query_list = list(query)
+        return False if len(query) == 0 else True
+
     def process_request(self, request):#check refresh token
         """Let's handle old-style request processing here, as usual."""
         # check token auth with google
 
         if request.method == 'POST':
             data_dict = request.POST
+            data_dict = dataRefacter(data_dict)
             print("check auth ! ! ! ....")
 
             if 'authCode' in data_dict:
                 return
-            
-            refresh_token = data_dict['token']
-            refresh_token = re.sub('["\']', '', refresh_token)
 
-            print("refresh_token",refresh_token)
+            try:
+                token = data_dict['token']
+                decoded_data = self.jwtDecode(token)
+                
+                if self.checkUserHaveDataFromId(decoded_data['id']):
+                    return
+
+            except Exception as e:
+                raise HttpResponseBadRequest(str(Exception))
+            raise HttpResponseBadRequest('Token Not Found, You Not Login !!')
+
+            # refresh_token = data_dict['token']
+            # refresh_token = re.sub('["\']', '', refresh_token)
+
+            # print("refresh_token",refresh_token)
 
             # data = {
             #     'client_id': GoogleAuthConsoleData().client_id,
