@@ -184,7 +184,7 @@ def postUserData(request) -> None:
         data_dict = request.POST
         data_dict = dataRefacter(data_dict)
         try:
-            decode_token = jwtDecode(data_dict['token'])
+            decode_token = jwtDecode(data_dict['authCode'])
         except Exception as e:
             raise e
         #saveData(data_dict,student_id_)
@@ -194,7 +194,7 @@ def postUserData(request) -> None:
                         firstname=data_dict['name'],
                         lastname=data_dict['surname'],
                         email=decode_token['email'],
-                        token=data_dict['token'],
+                        token=data_dict['authCode'],
                         faculty=data_dict['faculty'],
                         department=data_dict['department'],
                         year= int(data_dict['year']) )
