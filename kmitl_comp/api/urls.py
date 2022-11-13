@@ -14,5 +14,8 @@ urlpatterns = [
     path('helloworld', views.helloWorld),
     path('testtoken', views.testToken),
     path('checktoken', views.checkToken),
-    path('testpost',views.testpost)
+    path('testpost',views.testpost),
+
+    #locationAPI
+     path('getlocationquery',views.getLocationQuery),
 ]

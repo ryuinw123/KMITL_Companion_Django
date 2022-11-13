@@ -13,6 +13,7 @@ import string
 import random
 import regex as re
 import datetime
+import requests
 
 #utils
 from .utils import *
@@ -38,6 +39,24 @@ def callTokenFromId(student_id_):
     query = User.objects.all().filter(student_id=student_id_).values()
     query_list = list(query)
     return query_list[0]['token']
+
+
+@csrf_exempt
+def getLocationQuery(request) -> None:
+    if request.method == "POST":
+        data = request.POST
+        latitude = data["latitude"]
+        longitude = data["longitude"]
+        x = requests.get(f"https://api.mapbox.com/geocoding/v5/mapbox.places/{longitude},{latitude}.json?access_token=pk.eyJ1Ijoicnl1aW53MTIzIiwiYSI6ImNsODV5M21odjB0dXAzbm9lZDhnNXVoY2UifQ.IiTAr5ITOUcCVjPjWiRe1w&limit=1")
+        data = x.json()
+        feature = data["features"][0]
+
+        response = {
+            "place" : feature["text"],
+            "address" : feature["place_name"]
+        }
+
+        return JsonResponse(response,safe=False)
     
 
 @csrf_exempt
@@ -246,4 +265,5 @@ def testToken(request):
         response_data['token'] = token
 
         return HttpResponse(json.dumps(response_data), content_type="application/json")
+
 
