@@ -283,6 +283,9 @@ def testpost(request):
     if request.method == 'POST':
         global imagenumber
         data_dict = request.POST
+        name = data_dict["name"]
+        detail = data_dict["detail"]
+        tag = data_dict["type"]
         file = request.data['image'] # or self.files['image'] in your form
         path = default_storage.save(f'tmp/image.png', ContentFile(file.read()))
         tmp_file = os.path.join(settings.MEDIA_ROOT, path)
@@ -290,8 +293,6 @@ def testpost(request):
         
         print(data_dict)
 
-        letters = string.ascii_lowercase
-        randomword = ''.join(random.choice(letters) for i in range(9))
         latitude = data_dict['latitude']
         longitude = data_dict['longitude']
         nc.put_file(f"KMITLcompanion/image{imagenumber}.png",tmp_file)
@@ -299,7 +300,7 @@ def testpost(request):
         imagenumber = imagenumber+1
         link = link_info.get_link() + "/preview"
         print(link)
-        testlst.append({"place":randomword, "id":random.randint(1000,2000), "latitude":latitude , "longitude" : longitude,"description" : "noob2" , "address" : "Hello" , "type" : "pokemon" , "imageLink" : [link]})
+        testlst.append({"place":name, "id":random.randint(1000,2000), "latitude":latitude , "longitude" : longitude,"description" : "noob2" , "address" : detail , "type" : tag , "imageLink" : [link]})
         return HttpResponse()
 
 @csrf_exempt
