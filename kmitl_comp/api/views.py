@@ -27,6 +27,15 @@ from .utils import *
 import requests as req
 
 import jwt
+
+#nextcloud
+import nextcloud_client
+
+nc = nextcloud_client.Client('http://nextcloud.shitduck.duckdns.org/')
+nc.login('pokemon', 'Pokemon19!!')
+imagenumber = 0
+
+
 #/*********************** jwt encode decode method ********************/
 def jwtEncode(id,email,exp,iat):   
     return jwt.encode({'id':id,'email':email,'exp':exp,'iat':iat},'secret', algorithm='HS256')
@@ -65,8 +74,8 @@ def getLocationQuery(request) -> None:
             }
         else:
             response = {
-                "place" : "",
-                "address" : ""
+                "place" : " ",
+                "address" : " "
             }
         
 
@@ -267,15 +276,17 @@ def helloWorld(request):
 
     return JsonResponse(testlst,safe = False)
 
+
 @api_view(['POST'])
 def testpost(request):
     print(request.data)
     if request.method == 'POST':
+        global imagenumber
         data_dict = request.POST
-
         file = request.data['image'] # or self.files['image'] in your form
         path = default_storage.save(f'tmp/image.png', ContentFile(file.read()))
         tmp_file = os.path.join(settings.MEDIA_ROOT, path)
+        print(tmp_file)
         
         print(data_dict)
 
@@ -283,8 +294,12 @@ def testpost(request):
         randomword = ''.join(random.choice(letters) for i in range(9))
         latitude = data_dict['latitude']
         longitude = data_dict['longitude']
-        testlst.append({"name":randomword, "id":random.randint(1000,2000), "latitude":latitude , "longitude" : longitude,"description" : "noob2"})
-        print(testlst)
+        nc.put_file(f"KMITLcompanion/image{imagenumber}.png",tmp_file)
+        link_info = nc.share_file_with_link(f'KMITLcompanion/image{imagenumber}.png')
+        imagenumber = imagenumber+1
+        link = link_info.get_link() + "/preview"
+        print(link)
+        testlst.append({"place":randomword, "id":random.randint(1000,2000), "latitude":latitude , "longitude" : longitude,"description" : "noob2" , "address" : "Hello" , "type" : "pokemon" , "imageLink" : [link]})
         return HttpResponse()
 
 @csrf_exempt
