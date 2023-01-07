@@ -16,9 +16,6 @@ urlpatterns = [
     path('testpost', views.TestMethods.testMethod.testpost),
 
     #locationAPI
-     path('getlocationquery',views.MapBox.locationQuery.getLocationQuery),
-
-    #path('eiei',views.Auth.views_login.testmethod),
-    #path('eiei2',views.testmethod2),
+    path('getlocationquery',views.MapBox.locationQuery.getLocationQuery),
 
 ]
