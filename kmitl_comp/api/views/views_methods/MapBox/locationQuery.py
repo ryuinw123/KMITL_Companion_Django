@@ -12,7 +12,7 @@ def getLocationQuery(request) -> None:
         x = requests.get(f"https://api.mapbox.com/geocoding/v5/mapbox.places/{longitude},{latitude}.json?access_token=pk.eyJ1Ijoicnl1aW53MTIzIiwiYSI6ImNsODV5M21odjB0dXAzbm9lZDhnNXVoY2UifQ.IiTAr5ITOUcCVjPjWiRe1w&limit=1")
         data = x.json()
 
-        if (data):
+        if (data["features"]):
             feature = data["features"][0]
 
             response = {
@@ -21,7 +21,7 @@ def getLocationQuery(request) -> None:
             }
         else:
             response = {
-                "place" : " ",
+                "place" : "The Ocean",
                 "address" : " "
             }
         
