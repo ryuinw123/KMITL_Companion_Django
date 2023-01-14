@@ -6,10 +6,10 @@ def dataRefacter(data_):
     del data_
     if isinstance(data,list):
         for v in data:
-            v = v[1:-1]
+            v = v.strip('"')
     elif isinstance(data,dict):
         for k,v in data.items():
-            data[k] = v[1:-1]
+            data[k] = v.strip('"')
     elif isinstance(data,str):
-        data = data[1:-1]
+        data = data.strip('"')
     return data

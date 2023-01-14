@@ -5,17 +5,23 @@ from .views import views
 from django.views.decorators.csrf import csrf_exempt
 
 urlpatterns = [
-    #UserApi
-    path('login', views.Auth.Login.userLogin),
-    path('postuserdata', views.Auth.Login.postUserData),
-
+    #Test Methods
     #testapi
-    path('helloworld', views.TestMethods.testMethod.helloWorld),
-    path('testtoken', views.TestMethods.testMethod.testToken),
-    path('checktoken', views.TestMethods.testMethod.checkToken),
-    path('testpost', views.TestMethods.testMethod.testpost),
+    path('testtoken', views.testMethods.testMethod.testToken),
+    path('checktoken', views.testMethods.testMethod.checkToken),
 
+    #Auth Methods
+    #UserApi
+    path('login', views.auth.Login.userLogin),
+    path('postuserdata', views.auth.Login.postUserData),
+
+    #MapBox Methods
     #locationAPI
-    path('getlocationquery',views.MapBox.locationQuery.getLocationQuery),
+    path('getlocationquery',views.mapBox.locationQuery.getLocationQuery),
 
+    #createLocationQuery
+    path('createlocationquery',views.mapBox.locationQuery.createLocationQuery),#
+
+    #getMapPoints
+    path('getmappoints', views.mapBox.locationQuery.getMapPoints),
 ]
