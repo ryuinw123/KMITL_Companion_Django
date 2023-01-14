@@ -1,5 +1,6 @@
 #/***** refacter array or dict or str from "str" -> str *******/
 from copy import deepcopy
+import jwt
 
 def dataRefacter(data_):
     data = deepcopy(data_)
@@ -13,3 +14,6 @@ def dataRefacter(data_):
     elif isinstance(data,str):
         data = data.strip('"')
     return data
+
+def returnUserIdFromToken(token) -> int:
+    return int(jwt.decode(token, 'secret', algorithms=['HS256'])['id'])

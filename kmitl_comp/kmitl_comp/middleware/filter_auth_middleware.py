@@ -23,10 +23,10 @@ class FilterAuthMiddleware(object):
         """
         self.get_response = next_layer
 
-    def jwtDecode(token):
+    def jwtDecode(self,token):
         return jwt.decode(token, 'secret', algorithms=['HS256'])
 
-    def checkUserHaveDataFromId(student_id_) -> bool:
+    def checkUserHaveDataFromId(self,student_id_) -> bool:
         query = User.objects.all().filter(student_id=student_id_).values()
         query_list = list(query)
         return False if len(query) == 0 else True
@@ -45,6 +45,7 @@ class FilterAuthMiddleware(object):
 
             try:
                 token = data_dict['token']
+                print(token)
                 decoded_data = self.jwtDecode(token)
                 
                 if self.checkUserHaveDataFromId(decoded_data['id']):

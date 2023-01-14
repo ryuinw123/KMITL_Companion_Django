@@ -60,8 +60,9 @@ imagenumber = 0
 
 def getMapPoints(request):
     #print(testlst)
-
-    get_marker = list(Marker.objects.all().filter(enable=1,created_user_id=62010893).values(
+    token = request.GET.get('token')
+    print("token : ",token)
+    get_marker = list(Marker.objects.all().filter(enable=1,created_user_id=returnUserIdFromToken(token)).values(
         "id",
         "latitude",
         "longitude",
@@ -90,13 +91,15 @@ def createLocationQuery(request):
             global imagenumber
             data_dict = request.POST
             data_dict = dataRefacter(data_dict)
-            place = data_dict["name"]
-            detail = data_dict["detail"]
-            tag = data_dict["type"]
+            name = data_dict["name"]
+            place = data_dict["place"]
+            address = data_dict["address"]
+            description = data_dict["description"]
+            type = data_dict["type"]
             file = request.data['image'] # or self.files['image'] in your form
             path = default_storage.save(f'tmp/image.png', ContentFile(file.read()))
             tmp_file = os.path.join(settings.MEDIA_ROOT, path)
-            #print(tmp_file)
+            print(tmp_file)
             
             #print(data_dict)
 
@@ -110,17 +113,21 @@ def createLocationQuery(request):
 
             #testlst.append({"place":name, "id":random.randint(1000,2000), "latitude":latitude , "longitude" : longitude,"description" : "noob2" , "address" : detail , "type" : tag , "imageLink" : [link]})
             #print(latitude," === ",longitude)
-            get_User = User.objects.get(student_id=62010893)#***ไว้แก้ทีหลัง
-            save_marker = Marker(name=place,
-                            place=place,#***ไว้แก้ทีหลัง
-                            address=detail,#***ไว้แก้ทีหลัง
+            get_User = User.objects.get(student_id=returnUserIdFromToken(data_dict['token']))#***ไว้แก้ทีหลัง
+            save_marker = Marker(name=name,
+                            place=place,
+                            address=address,
                             latitude=latitude,longitude=longitude,
-                            description=detail,#***ไว้แก้ทีหลัง
-                            type=tag,
+                            description=description,
+                            type=type,
                             imageLink=str([link]),
                             created_user=get_User,)
             save_marker.save()
 
+            #/*** remove tmp file ****/
+
+            print(" token ",)
+            print(" temp file",tmp_file)
         except Exception as e:
             raise e
             
