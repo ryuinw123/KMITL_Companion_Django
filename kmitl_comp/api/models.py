@@ -103,6 +103,15 @@ class Event(models.Model):
         db_table = 'event'
 
 
+class Image(models.Model):
+    image_id = models.AutoField(primary_key=True)
+    marker = models.ForeignKey('Marker', models.DO_NOTHING)
+    link = models.TextField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'image'
+
 class Issue(models.Model):
     issue_id = models.AutoField(primary_key=True)
     description = models.TextField(blank=True, null=True)
@@ -128,7 +137,6 @@ class Marker(models.Model):
     longitude = models.DecimalField(max_digits=11, decimal_places=8, blank=True, null=True)
     description = models.TextField(blank=True, null=True)
     type = models.CharField(max_length=45, blank=True, null=True)
-    imageLink = models.TextField(db_column='imageLink', blank=True, null=True)  # Field name made lowercase.  # Field name made lowercase.
     enable = models.IntegerField(default=1,blank=True, null=True)
     createtime = models.DateTimeField(default=datetime.now(), null=True)
     created_user = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True)

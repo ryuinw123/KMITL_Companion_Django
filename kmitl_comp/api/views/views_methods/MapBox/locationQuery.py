@@ -61,29 +61,31 @@ imagenumber = 0
 def getMapPoints(request):
     #print(testlst)
     token = request.GET.get('token')
-    print("token : ",token)
-    get_marker = list(Marker.objects.all().filter(enable=1,created_user_id=returnUserIdFromToken(token)).values(
-        "id",
-        "latitude",
-        "longitude",
-        "description",
-        "address",
-        "place",
-        "type",
-        "imageLink"
-    ))
+    #print("token : ",token)
+    get_marker_obj = Marker.objects.all().filter(enable=1,created_user_id=returnUserIdFromToken(token))
+    get_marker = list(get_marker_obj.values(
+                    "id",
+                    "name",
+                    "latitude",
+                    "longitude",
+                    "description",
+                    "address",
+                    "place",
+                    "type",
+                 ))
+    get_image_marker = list(Image.objects.filter(marker__in=list(get_marker_obj.values_list('id',flat=True))).values("marker","link"))
     
     for rows in get_marker:
         rows['latitude'] = str(rows['latitude'])
         rows['longitude'] = str(rows['longitude'])
-        rows['imageLink'] = ast.literal_eval(rows['imageLink'])
+        rows.update({"imageLink" : [sub['link'] for sub in get_image_marker if sub['marker'] == rows['id']]})
 
+    #print("get_marker : ",get_marker,"\n ",type(get_marker))
     return JsonResponse(get_marker,safe = False)
 
 
 @api_view(['POST'])
 def createLocationQuery(request):
-    #print(request.data)
     if request.method == 'POST':
 
         try:
@@ -96,38 +98,61 @@ def createLocationQuery(request):
             address = data_dict["address"]
             description = data_dict["description"]
             type = data_dict["type"]
-            file = request.data['image'] # or self.files['image'] in your form
-            path = default_storage.save(f'tmp/image.png', ContentFile(file.read()))
-            tmp_file = os.path.join(settings.MEDIA_ROOT, path)
-            print(tmp_file)
-            
-            #print(data_dict)
-
             latitude = data_dict['latitude']
             longitude = data_dict['longitude']
-            nc.put_file(f"KMITLcompanion/image{imagenumber}.png",tmp_file)
-            link_info = nc.share_file_with_link(f'KMITLcompanion/image{imagenumber}.png')
-            imagenumber = imagenumber+1
-            link = link_info.get_link() + "/preview"
-            #print(link)
+            #file = request.data['image'] # or self.files['image'] in your form
+            file = request.data.getlist('image')
 
-            #testlst.append({"place":name, "id":random.randint(1000,2000), "latitude":latitude , "longitude" : longitude,"description" : "noob2" , "address" : detail , "type" : tag , "imageLink" : [link]})
-            #print(latitude," === ",longitude)
-            get_User = User.objects.get(student_id=returnUserIdFromToken(data_dict['token']))#***ไว้แก้ทีหลัง
+        
+            print("file : ",file)
+            #print("file : ",file)
+            # print(data_dict)
+            link = []
+
+            if file != []:
+                for file_ in file:
+                    path = default_storage.save(f'tmp/image.png', ContentFile(file_.read()))
+                    tmp_file = os.path.join(settings.MEDIA_ROOT, path)
+
+                    nc.put_file(f"KMITLcompanion/image{imagenumber}.png",tmp_file)
+                    link_info = nc.share_file_with_link(f'KMITLcompanion/image{imagenumber}.png')
+                    imagenumber = imagenumber+1
+                    link.append(link_info.get_link() + "/preview")
+            print(" --------------- > ",link)
+
+
+            #########
+                
+            # link = ""
+            # if file != []:
+            #     path = default_storage.save(f'tmp/image.png', ContentFile(file[0].read()))
+            #     tmp_file = os.path.join(settings.MEDIA_ROOT, path)
+
+            #     nc.put_file(f"KMITLcompanion/image{imagenumber}.png",tmp_file)
+            #     link_info = nc.share_file_with_link(f'KMITLcompanion/image{imagenumber}.png')
+            #     imagenumber = imagenumber+1
+            #     link = link_info.get_link() + "/preview"
+
+
+            get_User = User.objects.get(student_id=returnUserIdFromToken(data_dict['token']))
             save_marker = Marker(name=name,
                             place=place,
                             address=address,
                             latitude=latitude,longitude=longitude,
                             description=description,
                             type=type,
-                            imageLink=str([link]),
                             created_user=get_User,)
             save_marker.save()
 
+            if link != []:
+                for _link in link:
+                    save_image = Image(marker=save_marker,link=_link)
+                    save_image.save()
+
             #/*** remove tmp file ****/
 
-            print(" token ",)
-            print(" temp file",tmp_file)
+            #print(" token ",)
+            #print(" temp file",tmp_file)
         except Exception as e:
             raise e
             
