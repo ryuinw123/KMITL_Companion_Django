@@ -22,6 +22,10 @@ urlpatterns = [
     #createLocationQuery
     path('createlocationquery',views.mapBox.locationQuery.createLocationQuery),#
 
+    #createPublicLocationQuery
+    path('createpubliclocationquery',views.mapBox.locationQuery.createPublicLocationQuery),#
+
+
     #getMapPoints
     path('getmappoints', views.mapBox.locationQuery.getMapPoints),
 ]

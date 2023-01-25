@@ -62,7 +62,13 @@ def getMapPoints(request):
     #print(testlst)
     token = request.GET.get('token')
     #print("token : ",token)
-    get_marker_obj = Marker.objects.all().filter(enable=1,created_user_id=returnUserIdFromToken(token))
+
+
+    get_public_marker_obj = PermissionMarker.objects.all().values_list("pm_maker",flat=True)
+
+    get_marker_obj = Marker.objects.all().filter(enable=1,created_user_id=returnUserIdFromToken(token)).union(
+                     Marker.objects.all().filter(enable=1,id__in=list(get_public_marker_obj)))
+    
     get_marker = list(get_marker_obj.values(
                     "id",
                     "name",
@@ -87,7 +93,6 @@ def getMapPoints(request):
 @api_view(['POST'])
 def createLocationQuery(request):
     if request.method == 'POST':
-
         try:
 
             global imagenumber
@@ -100,13 +105,8 @@ def createLocationQuery(request):
             type = data_dict["type"]
             latitude = data_dict['latitude']
             longitude = data_dict['longitude']
-            #file = request.data['image'] # or self.files['image'] in your form
             file = request.data.getlist('image')
 
-        
-            print("file : ",file)
-            #print("file : ",file)
-            # print(data_dict)
             link = []
 
             if file != []:
@@ -118,21 +118,8 @@ def createLocationQuery(request):
                     link_info = nc.share_file_with_link(f'KMITLcompanion/image{imagenumber}.png')
                     imagenumber = imagenumber+1
                     link.append(link_info.get_link() + "/preview")
-            print(" --------------- > ",link)
-
-
-            #########
-                
-            # link = ""
-            # if file != []:
-            #     path = default_storage.save(f'tmp/image.png', ContentFile(file[0].read()))
-            #     tmp_file = os.path.join(settings.MEDIA_ROOT, path)
-
-            #     nc.put_file(f"KMITLcompanion/image{imagenumber}.png",tmp_file)
-            #     link_info = nc.share_file_with_link(f'KMITLcompanion/image{imagenumber}.png')
-            #     imagenumber = imagenumber+1
-            #     link = link_info.get_link() + "/preview"
-
+            #/*** remove tmp file ****/
+                    os.remove(settings.MEDIA_ROOT + tmp_file)
 
             get_User = User.objects.get(student_id=returnUserIdFromToken(data_dict['token']))
             save_marker = Marker(name=name,
@@ -149,10 +136,65 @@ def createLocationQuery(request):
                     save_image = Image(marker=save_marker,link=_link)
                     save_image.save()
 
-            #/*** remove tmp file ****/
+        except Exception as e:
+            raise e
+            
+    return HttpResponse()
 
-            #print(" token ",)
-            #print(" temp file",tmp_file)
+@api_view(['POST'])
+def createPublicLocationQuery(request):
+    if request.method == 'POST':
+        try:
+
+            global imagenumber
+            data_dict = request.POST
+            data_dict = dataRefacter(data_dict)
+            name = data_dict["name"]
+            place = data_dict["place"]
+            address = data_dict["address"]
+            description = data_dict["description"]
+            type = data_dict["type"]
+            latitude = data_dict['latitude']
+            longitude = data_dict['longitude']
+            file = request.data.getlist('image')
+
+            link = []
+
+            if file != []:
+                for file_ in file:
+                    path = default_storage.save(f'tmp/image.png', ContentFile(file_.read()))
+                    tmp_file = os.path.join(settings.MEDIA_ROOT, path)
+
+                    nc.put_file(f"KMITLcompanion/image{imagenumber}.png",tmp_file)
+                    link_info = nc.share_file_with_link(f'KMITLcompanion/image{imagenumber}.png')
+                    imagenumber = imagenumber+1
+                    link.append(link_info.get_link() + "/preview")
+            #/*** remove tmp file ****/
+                    os.remove(settings.MEDIA_ROOT + tmp_file)
+            #print(" --------------- > ",link)
+
+            get_User = User.objects.get(student_id=returnUserIdFromToken(data_dict['token']))
+            save_marker = Marker(name=name,
+                            place=place,
+                            address=address,
+                            latitude=latitude,longitude=longitude,
+                            description=description,
+                            type=type,
+                            created_user=get_User,)
+            save_marker.save()
+
+            if link != []:
+                for _link in link:
+                    save_image = Image(marker=save_marker,link=_link)
+                    save_image.save()
+
+            #/*** crete public permission ****/
+            save_permission = Permission(permission_student=get_User)
+            save_permission.save()
+
+            save_marker_permission = PermissionMarker(pm_permission=save_permission,pm_maker=save_marker)
+            save_marker_permission.save()
+
         except Exception as e:
             raise e
             

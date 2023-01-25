@@ -38,14 +38,14 @@ class FilterAuthMiddleware(object):
         if request.method == 'POST':
             data_dict = request.POST
             data_dict = dataRefacter(data_dict)
-            print("check auth ! ! ! ....")
+            #print("check auth ! ! ! ....")
 
             if 'authCode' in data_dict:
                 return
 
             try:
                 token = data_dict['token']
-                print(token)
+                #print(token)
                 decoded_data = self.jwtDecode(token)
                 
                 if self.checkUserHaveDataFromId(decoded_data['id']):

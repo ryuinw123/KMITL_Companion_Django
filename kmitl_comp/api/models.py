@@ -175,7 +175,7 @@ class News(models.Model):
 class Permission(models.Model):
     permission_id = models.AutoField(primary_key=True)
     permission_student = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True)
-    createtime = models.DateTimeField(blank=True, null=True)
+    createtime = models.DateTimeField(default=datetime.now(), null=True)
 
     class Meta:
         managed = False
