@@ -38,7 +38,7 @@ class FilterAuthMiddleware(object):
         if request.method == 'POST':
             data_dict = request.POST
             data_dict = dataRefacter(data_dict)
-            #print("check auth ! ! ! ....")
+            #print("check auth ! ! ! ....",data_dict)
 
             if 'authCode' in data_dict:
                 return

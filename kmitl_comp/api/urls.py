@@ -25,7 +25,9 @@ urlpatterns = [
     #createPublicLocationQuery
     path('createpubliclocationquery',views.mapBox.locationQuery.createPublicLocationQuery),#
 
-
     #getMapPoints
     path('getmappoints', views.mapBox.locationQuery.getMapPoints),
+
+    #getLikeLocationQuery
+    path('getlikelocationquery', views.mapBox.markerDetailsQuery.getLikeLocationQuery),
 ]
