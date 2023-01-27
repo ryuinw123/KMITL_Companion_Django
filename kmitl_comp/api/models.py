@@ -145,11 +145,10 @@ class Marker(models.Model):
         managed = False
         db_table = 'marker'
 
-
 class MarkerLike(models.Model):
     markerlike_student = models.OneToOneField('User', models.DO_NOTHING, primary_key=True)
-    markerlike_marker = models.ForeignKey(Marker, models.DO_NOTHING)
-    createtime = models.DateTimeField(blank=True, null=True)
+    markerlike_marker = models.OneToOneField(Marker, models.DO_NOTHING)
+    createtime = models.DateTimeField(default=datetime.now(), null=True)
 
     class Meta:
         managed = False

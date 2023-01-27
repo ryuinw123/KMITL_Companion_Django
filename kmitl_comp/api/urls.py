@@ -28,6 +28,12 @@ urlpatterns = [
     #getMapPoints
     path('getmappoints', views.mapBox.locationQuery.getMapPoints),
 
-    #getLikeLocationQuery
-    path('getlikelocationquery', views.mapBox.markerDetailsQuery.getLikeLocationQuery),
+    #getpindetailslocationquery
+    path('getpindetailslocationquery', views.mapBox.markerDetailsQuery.getPinDetailsLocationQuery),
+
+    #likelocationquery
+    path('likelocationquery', views.mapBox.markerDetailsQuery.likeLocationQuery),
+
+    #dislikelocationquery
+    path('dislikelocationquery', views.mapBox.markerDetailsQuery.dislikeLocationQuery),
 ]
