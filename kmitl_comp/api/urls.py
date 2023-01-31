@@ -29,11 +29,23 @@ urlpatterns = [
     path('getmappoints', views.mapBox.locationQuery.getMapPoints),
 
     #getpindetailslocationquery
-    path('getpindetailslocationquery', views.mapBox.markerDetailsQuery.getPinDetailsLocationQuery),
+    path('getpindetailslocationquery', views.mapBox.MarkerDetailsQuery.getPinDetailsLocationQuery),
 
     #likelocationquery
-    path('likelocationquery', views.mapBox.markerDetailsQuery.likeLocationQuery),
+    path('likelocationquery', views.mapBox.MarkerDetailsQuery.likeLocationQuery),
 
     #dislikelocationquery
-    path('dislikelocationquery', views.mapBox.markerDetailsQuery.dislikeLocationQuery),
+    path('dislikelocationquery', views.mapBox.MarkerDetailsQuery.dislikeLocationQuery),
+
+    #addcommentmarkerlocationquery
+    path('addcommentmarkerlocationquery', views.mapBox.MarkerDetailsQuery.addCommentMarkerLocationQuery),
+
+    #editcommentmarkerlocationquery
+    path('editcommentmarkerlocationquery', views.mapBox.MarkerDetailsQuery.editCommentMarkerLocationQuery),
+
+    #deletecommentmarkerlocationquery
+    path('deletecommentmarkerlocationquery', views.mapBox.MarkerDetailsQuery.deleteCommentMarkerLocationQuery),
+
+    #likedislikecommentmarkerlocationquery
+    path('likedislikecommentmarkerlocationquery', views.mapBox.MarkerDetailsQuery.likeDislikeCommentMarkerLocationQuery),
 ]

@@ -59,7 +59,7 @@ class Comment(models.Model):
     content = models.TextField(blank=True, null=True)
     comment_marker = models.ForeignKey('Marker', models.DO_NOTHING, blank=True, null=True)
     comment_student = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True)
-    createtime = models.DateTimeField(blank=True, null=True)
+    createtime = models.DateTimeField(default=datetime.now(),blank=True, null=True)
 
     class Meta:
         managed = False
@@ -67,13 +67,15 @@ class Comment(models.Model):
 
 
 class CommentLike(models.Model):
-    cl_comment = models.ForeignKey(Comment, models.DO_NOTHING)
+    cl_comment = models.OneToOneField(Comment, models.DO_NOTHING, primary_key=True)
     cl_student = models.ForeignKey('User', models.DO_NOTHING)
-    createtime = models.DateTimeField(blank=True, null=True)
+    islike = models.IntegerField(db_column='isLike', blank=True, null=True)  # Field name made lowercase.
+    createtime = models.DateTimeField(default=datetime.now(),blank=True, null=True)
 
     class Meta:
         managed = False
         db_table = 'comment_like'
+        unique_together = (('cl_comment', 'cl_student'),)
 
 
 class Emergency(models.Model):
