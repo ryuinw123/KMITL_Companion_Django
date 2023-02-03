@@ -5,6 +5,7 @@ import jwt
 from django.views.decorators.csrf import csrf_exempt
 from django.forms import ValidationError
 from datetime import datetime
+from datetime import timedelta
 
 import requests as req
 
@@ -55,7 +56,7 @@ def userLogin(request) -> None:
                 status = 1
                 returnToken = callTokenFromId(student_id_)
             else:
-                kmitl_token = jwtEncode(user_data['email'].split('@')[0],user_data['email'],datetime.utcnow() + datetime.timedelta(hours=525600),datetime.utcnow())
+                kmitl_token = jwtEncode(user_data['email'].split('@')[0],user_data['email'],datetime.utcnow() + timedelta(hours=525600),datetime.utcnow())
                 returnToken = kmitl_token
             
 
