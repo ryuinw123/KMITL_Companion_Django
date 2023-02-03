@@ -4,7 +4,7 @@ from django.core.exceptions import BadRequest
 import jwt
 from django.views.decorators.csrf import csrf_exempt
 from django.forms import ValidationError
-import datetime
+from datetime import datetime
 
 import requests as req
 
@@ -55,7 +55,7 @@ def userLogin(request) -> None:
                 status = 1
                 returnToken = callTokenFromId(student_id_)
             else:
-                kmitl_token = jwtEncode(user_data['email'].split('@')[0],user_data['email'],datetime.datetime.utcnow() + datetime.timedelta(hours=525600),datetime.datetime.utcnow())
+                kmitl_token = jwtEncode(user_data['email'].split('@')[0],user_data['email'],datetime.utcnow() + datetime.timedelta(hours=525600),datetime.utcnow())
                 returnToken = kmitl_token
             
 
