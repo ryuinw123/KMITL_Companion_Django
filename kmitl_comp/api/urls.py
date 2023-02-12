@@ -48,4 +48,14 @@ urlpatterns = [
 
     #likedislikecommentmarkerlocationquery
     path('likedislikecommentmarkerlocationquery', views.mapBox.MarkerDetailsQuery.likeDislikeCommentMarkerLocationQuery),
+
+    #getsearchdetailslocationquery
+    path('getsearchdetailslocationquery', views.mapBox.SearchMarkerDetailsQuery.getSearchDetailsQuery),
+
+    #getallbookmakerlocationquery
+    path('getallbookmakerlocationquery', views.mapBox.MarkerDetailsQuery.getAllBookmakerLocationQuery),
+
+    #updatebookmakerlocationquery
+    path('updatebookmakerlocationquery', views.mapBox.MarkerDetailsQuery.updateBookmakerLocationQuery),
+
 ]

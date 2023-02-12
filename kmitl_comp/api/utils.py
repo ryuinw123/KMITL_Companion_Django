@@ -17,3 +17,39 @@ def dataRefacter(data_):
 
 def returnUserIdFromToken(token) -> int:
     return int(jwt.decode(token, 'secret', algorithms=['HS256'])['id'])
+
+
+def returnTypeCodeToName(listOfTypeCode):
+    typeCode = {
+        0 : "ร้านอาหาร",
+        1 : "อาคารเรียน",
+        2 : "ห้องเรียน",
+        3 : "ร้านค้า",
+        4 : "ตึก",
+        5 : "หอพัก",
+        99 : "ทั่วไป",
+        100 : 100, #bookmark
+    }
+    newList = []
+
+    for _listOfTypeCode in listOfTypeCode:
+        newList.append(typeCode[_listOfTypeCode])
+
+    if (newList == []):
+        newList = [val for val in typeCode.values()]
+
+    return newList
+
+def returnNameToTypeCode(name):
+    typeCode = {
+        0 : "ร้านอาหาร",
+        1 : "อาคารเรียน",
+        2 : "ห้องเรียน",
+        3 : "ร้านค้า",
+        4 : "ตึก",
+        5 : "หอพัก",
+        99 : "ทั่วไป",
+        100 : 100, #bookmark
+    }
+
+    return [key for key, val in typeCode.items() if val == name][0]

@@ -46,7 +46,7 @@ class Admin(models.Model):
 class Bookmark(models.Model):
     bookmark_student = models.OneToOneField('User', models.DO_NOTHING, primary_key=True)
     bookmark_marker = models.ForeignKey('Marker', models.DO_NOTHING)
-    createtime = models.DateTimeField(blank=True, null=True)
+    createtime = models.DateTimeField(default=datetime.now(),blank=True, null=True)
 
     class Meta:
         managed = False
@@ -93,11 +93,11 @@ class Emergency(models.Model):
 class Event(models.Model):
     event_id = models.AutoField(primary_key=True)
     eventname = models.CharField(max_length=255)
+    description = models.TextField(blank=True, null=True)
     starttime = models.DateTimeField(blank=True, null=True)
     endtime = models.DateTimeField(blank=True, null=True)
-    description = models.TextField(blank=True, null=True)
+    polygon = models.TextField(blank=True, null=True)
     student = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True)
-    marker = models.ForeignKey('Marker', models.DO_NOTHING, blank=True, null=True)
     createtime = models.DateTimeField(blank=True, null=True)
 
     class Meta:

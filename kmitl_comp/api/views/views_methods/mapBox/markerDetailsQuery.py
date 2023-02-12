@@ -36,6 +36,11 @@ def getPinDetailsLocationQuery(request):
             isLiked = user_id in list(get_marker_like_object.values_list("markerlike_student",flat=True))
             likeCounting = len(list(get_marker_like_object.values()))
 
+            #/******* Bookmark Data *************/
+            get_bookmark_object = Bookmark.objects.all().filter(bookmark_student=user_id,bookmark_marker=marker_id)
+            isBookmarked = user_id in list(get_bookmark_object.values_list("bookmark_student",flat=True))
+            print("is bookemarked ,,,,,,,,,,,,,,,,,,, ",isBookmarked)
+
             #/******* Comment Data **********/
             get_comment_object = Comment.objects.all().filter(comment_marker=marker_id)
             id_list = list(get_comment_object.values_list("comment_id",flat=True))
@@ -97,6 +102,7 @@ def getPinDetailsLocationQuery(request):
             pinDetailsDict['likeCounting'] = likeCounting
             pinDetailsDict['isLiked'] = isLiked
             pinDetailsDict['comment'] = commentList
+            pinDetailsDict['isBookmarked'] = isBookmarked
 
             print("Pin Details = ",pinDetailsDict)
 
@@ -265,4 +271,59 @@ def likeDislikeCommentMarkerLocationQuery(request):
 
         except Exception as e:
             raise e
+    return HttpResponse()
+
+
+@api_view(['POST'])
+def getAllBookmakerLocationQuery(request):
+    if request.method == 'POST':
+        try:
+
+            data_dict = request.POST
+            data_dict = dataRefacter(data_dict)
+            user_id = returnUserIdFromToken(data_dict['token'])
+
+            #get_User = User.objects.get(student_id=user_id)
+            get_bookmark_object = Bookmark.objects.all().filter(bookmark_student=user_id)
+            bookmarkList = list(get_bookmark_object.values_list("bookmark_marker",flat=True))
+            print("getAllBookmakerLocationQuery",bookmarkList)
+
+
+            return JsonResponse(bookmarkList,safe = False)
+
+        except Exception as e:
+            raise e
+            
+    return HttpResponse()
+
+
+@api_view(['POST'])
+def updateBookmakerLocationQuery(request):
+    if request.method == 'POST':
+        try:
+
+            data_dict = request.POST
+            data_dict = dataRefacter(data_dict)
+            user_id = returnUserIdFromToken(data_dict['token'])
+            marker_id = data_dict['markerId']
+            is_bookmarked = data_dict['isBookmarked']
+
+            print("updateBookmaker",data_dict)
+            get_User = User.objects.get(student_id=user_id)
+            get_Marker = Marker.objects.get(id=int(marker_id))
+
+            if(is_bookmarked == 'true'): #create
+                saveBookmark = Bookmark.objects.create(bookmark_student=get_User,bookmark_marker=get_Marker,createtime=datetime.now())
+                print("save Bookamerk ",saveBookmark)
+            elif(is_bookmarked == 'false'):
+                getBookmark = Bookmark.objects.filter(bookmark_student=user_id,bookmark_marker=marker_id)
+                getBookmark.delete()
+
+            #get_User = User.objects.get(student_id=user_id)
+            
+            # saveLike = MarkerLike.objects.create(markerlike_marker=get_Marker,markerlike_student=get_User)
+
+        except Exception as e:
+            raise e
+            
     return HttpResponse()
