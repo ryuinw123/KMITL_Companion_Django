@@ -19,11 +19,17 @@ urlpatterns = [
     #locationAPI
     path('getlocationquery',views.mapBox.locationQuery.getLocationQuery),
 
+    #geteventlocations
+    path('geteventlocations',views.mapBox.locationQuery.getEventLocations),
+
+    #createeventquery
+    path('createeventquery',views.mapBox.locationQuery.createEventQuery),
+
     #createLocationQuery
-    path('createlocationquery',views.mapBox.locationQuery.createLocationQuery),#
+    path('createlocationquery',views.mapBox.locationQuery.createLocationQuery),
 
     #createPublicLocationQuery
-    path('createpubliclocationquery',views.mapBox.locationQuery.createPublicLocationQuery),#
+    path('createpubliclocationquery',views.mapBox.locationQuery.createPublicLocationQuery),
 
     #getMapPoints
     path('getmappoints', views.mapBox.locationQuery.getMapPoints),
@@ -58,4 +64,21 @@ urlpatterns = [
     #updatebookmakerlocationquery
     path('updatebookmakerlocationquery', views.mapBox.MarkerDetailsQuery.updateBookmakerLocationQuery),
 
+    #changeeventlikelocationquery
+    path('changeeventlikelocationquery', views.mapBox.EventDetailsQuery.changeEventLikeLocationQuery),
+
+    #changeeventbookmarklocationquery
+    path('changeeventbookmarklocationquery', views.mapBox.EventDetailsQuery.changeEventBookmarkLocationQuery),
+
+    #geteventdetailslocationquery
+    path('geteventdetailslocationquery', views.mapBox.EventDetailsQuery.getEventDetailsLocationQuery),
+
+    #getalleventbookmarker
+    path('getalleventbookmarker', views.mapBox.EventDetailsQuery.getAllEventBookMarker),
+
+    #deletemarkerlocationquery
+    path('deletemarkerlocationquery', views.mapBox.MarkerDetailsQuery.deleteMarkerLocationQuery),
+
+    #deleteeventlocationquery
+    path('deleteeventlocationquery', views.mapBox.EventDetailsQuery.deleteEventLocationQuery),
 ]

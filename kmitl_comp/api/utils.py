@@ -29,6 +29,7 @@ def returnTypeCodeToName(listOfTypeCode):
         5 : "หอพัก",
         99 : "ทั่วไป",
         100 : 100, #bookmark
+        969 : 969, #event
     }
     newList = []
 
@@ -50,6 +51,7 @@ def returnNameToTypeCode(name):
         5 : "หอพัก",
         99 : "ทั่วไป",
         100 : 100, #bookmark
+        969 : 969, #event
     }
 
     return [key for key, val in typeCode.items() if val == name][0]

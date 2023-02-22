@@ -89,7 +89,6 @@ class Emergency(models.Model):
         managed = False
         db_table = 'emergency'
 
-
 class Event(models.Model):
     event_id = models.AutoField(primary_key=True)
     eventname = models.CharField(max_length=255)
@@ -99,11 +98,32 @@ class Event(models.Model):
     polygon = models.TextField(blank=True, null=True)
     student = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True)
     createtime = models.DateTimeField(blank=True, null=True)
+    enable = models.IntegerField(blank=True, null=True)
 
     class Meta:
         managed = False
         db_table = 'event'
 
+class EventBookmark(models.Model):
+    event_bookmark_event = models.OneToOneField(Event, models.DO_NOTHING, primary_key=True)
+    event_bookmark_student = models.ForeignKey('User', models.DO_NOTHING)
+    createtime = models.DateTimeField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'event_bookmark'
+        unique_together = (('event_bookmark_event', 'event_bookmark_student'),)
+
+
+class EventLike(models.Model):
+    event_like_event = models.OneToOneField(Event, models.DO_NOTHING, primary_key=True)
+    event_like_student = models.ForeignKey('User', models.DO_NOTHING)
+    createtime = models.DateTimeField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'event_like'
+        unique_together = (('event_like_event', 'event_like_student'),)
 
 class Image(models.Model):
     image_id = models.AutoField(primary_key=True)
@@ -113,6 +133,15 @@ class Image(models.Model):
     class Meta:
         managed = False
         db_table = 'image'
+
+class ImageEvent(models.Model):
+    image_id = models.AutoField(primary_key=True)
+    event = models.ForeignKey(Event, models.DO_NOTHING)
+    link = models.TextField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'image_event'
 
 class Issue(models.Model):
     issue_id = models.AutoField(primary_key=True)

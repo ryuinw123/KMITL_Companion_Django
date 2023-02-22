@@ -13,6 +13,8 @@ import secrets
 import string
 import re as re
 from django.db.models import Q
+import math
+import ast
 #models
 from ....models import *
 
@@ -21,15 +23,63 @@ from ....utils import *
 
 
 #####################
-def filter_list(lst, field, pattern):
+def filter_marker_list(lst, field, pattern):
     regex = re.compile(pattern,re.IGNORECASE)
-    resultList = [item for item in lst if (regex.search(item.get(field[0])) 
-                    or regex.search(item.get(field[1])) 
-                    or regex.search(item.get(field[2])))]
 
-    sorted_list = sorted(resultList, key=lambda x: sum(1 for f in field if regex.search(x.get(f))))
+    resultList = []
+    for item in lst:
+        match_found = False
+        for field_item in field:
+            if regex.search(item.get(field_item)):
+                match_found = True
+                break
+        if match_found:
+            resultList.append(item)
+   
+    #sorted_list = sorted(resultList, key=lambda x: sum(1 for f in field if regex.search(x.get(f))))
+    return resultList
+
+
+def calDistanceBetween(resultList,current_lat,current_long):
+
+    for item in resultList:
+        if item.get('latitude') == None:
+            area =  ast.literal_eval(item.get('polygon'))
+            center = calculate_center(area)
+            lat = center[1]
+            long = center[0]
+            distance = distanceBe(lat,long,current_lat,current_long)#math.sqrt((lat - current_lat)**2 + (long - current_long)**2)
+            item['distance'] = distance
+
+        else:
+            lat = float(item.get('latitude'))
+            long = float(item.get('longitude'))
+            distance = distanceBe(lat,long,current_lat,current_long)#math.sqrt((lat - current_lat)**2 + (long - current_long)**2)
+            item['distance'] = distance
+
+    sorted_list = sorted(resultList, key=lambda k: k['distance'])
 
     return sorted_list
+
+def distanceBe(lat1, lon1, lat2, lon2):
+    R = 6371  # radius of the earth in kilometers
+    dLat = math.radians(lat2 - lat1)
+    dLon = math.radians(lon2 - lon1)
+    a = math.sin(dLat/2) * math.sin(dLat/2) + math.cos(math.radians(lat1)) \
+        * math.cos(math.radians(lat2)) * math.sin(dLon/2) * math.sin(dLon/2)
+    c = 2 * math.atan2(math.sqrt(a), math.sqrt(1-a))
+    d = R * c
+    return d
+
+def calculate_center(coords):
+    n = len(coords)
+    x = sum(p[0] for p in coords) / n
+    y = sum(p[1] for p in coords) / n
+    return [round(x, 6), round(y, 6)]
+
+
+
+
 
 @api_view(['POST'])
 def getSearchDetailsQuery(request):
@@ -43,12 +93,13 @@ def getSearchDetailsQuery(request):
             typeList = [int(x) for x in typeList]
             typeList = returnTypeCodeToName(typeList)
             text = newdata['text']
+            
+            latitude = newdata['lat']
+            longitude = newdata['long']
 
-            print("hello world this is search",text)
+            #print("hello world this is search =>>>>>>>>>>>>>>>>>>>>",newdata)
             get_User = User.objects.get(student_id=user_id)
 
-
-            pattern = re.compile("r^([A-z])", re.IGNORECASE)
             #get normal marker
             get_public_marker_obj = PermissionMarker.objects.all().values_list("pm_maker",flat=True)
             get_marker_obj = Marker.objects.all().filter(enable=1,
@@ -59,7 +110,16 @@ def getSearchDetailsQuery(request):
                                                         id__in=list(get_public_marker_obj),
                                                         type__in=typeList,                                        
                                                         ))
+            
+            
+            get_event_object = Event.objects.none()
+            now = datetime.now()
+            #ถ้ามี event ใน type
+            if (969 in typeList):
+                get_event_object = Event.objects.all().filter(enable=1,endtime__gte=now)
 
+
+            #ถ้า มี bookmark ใน type
             if (100 in typeList):
                 typeList.remove(100)
                 get_bookmark_object = Bookmark.objects.all().filter(bookmark_student=user_id)
@@ -67,38 +127,43 @@ def getSearchDetailsQuery(request):
                 get_marker_obj = get_marker_obj.union(Marker.objects.all().filter(enable=1,
                                                                                     id__in=bookmarkList,
                                                                                     ))
-            #code bookmark here
-            #test_marker_obj = Marker.objects.filter(name__iregex=r'^([{}]||{})+'.format(t,t)).values("name")
+                
+                get_event_bookmark_object = EventBookmark.objects.all().filter(event_bookmark_student=user_id)
+                eventList = list(get_event_bookmark_object.values_list("event_bookmark_event",flat=True))
+                get_event_object = get_event_object.union(Event.objects.all().filter(enable=1,endtime__gte=now,event_id__in=eventList))
+
 
             all_marker_list = list(get_marker_obj.values())
+            all_event_list = list(get_event_object.values()) if get_event_object != None else []
+
+            
+
             #filtered_list = filter_list(all_marker_list, 'name', (r'^([\w{}])*').format(t))
             filtered = all_marker_list
+            filtered_event = all_event_list
             if (text != ""):
-                filtered = filter_list(all_marker_list, ['name','place','address'], text)
-            # filtered_place = filter_list(all_marker_list, 'place', t)
-            # filtered_address = filter_list(all_marker_list, 'address', t)
-            # filtered_list = filtered_name.union(filtered_place).union(filtered_address)
-            
-            #print("ressult lit search ",list(get_marker_obj.values_list('id',flat=True)))
+                filtered = filter_marker_list(all_marker_list, ['name','place','address'], text,)
+                filtered_event = filter_marker_list(all_event_list,['eventname','description'], text)
 
-            #print("ressult lit search ",filtered_list)
-            #search here
-
+            all_filterd_list = calDistanceBetween(filtered + filtered_event,float(latitude),float(longitude))
+    
+            #for marker
             searchResultList = []
-            for d in filtered:
 
+            for data in all_filterd_list:
                 searchResultList.append(
                     {
-                        "id" : d['id'],
-                        "name" : d['name'],
-                        "place" : d['place'],
-                        "address" : d['address'],
+                        "id" : data.get('event_id', data.get('id', None)),
+                        "name" : data.get('eventname', data.get('name', None)),
+                        "place" :  data.get('place'," "),
+                        "address" : data.get('address'," "),
                         "pic" : 0,
-                        "code" : returnNameToTypeCode(d['type']),
+                        "code" : returnNameToTypeCode(data.get('type',969)),
+                        "distance" : round(data.get('distance'),1)
                     }
                 )
             
-            print("result of search : ",searchResultList)
+            #print("result of search =>>>>>>>>>>>>>>>>>>>>>>>>: ",searchResultList)
 
             return JsonResponse(searchResultList,safe = False)
         except Exception as e:

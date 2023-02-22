@@ -29,7 +29,15 @@ def getPinDetailsLocationQuery(request):
             marker_id = data_dict['id']
             #print(data_dict)
 
-
+            #/******** check My Marker ***********/
+            get_marker_object = Marker.objects.all().filter(id=marker_id)
+            isMyPin =  list(get_marker_object.filter(created_user=user_id).values()) != []
+            created_user_name_id = list(get_marker_object.values_list("created_user",flat=True))[0]
+            if (created_user_name_id != user_id) :
+                created_user = User.objects.filter(student_id=created_user_name_id)
+                created_user_name = (list(created_user.values_list("firstname",flat=True))[0]) + " " +(list(created_user.values_list("lastname",flat=True))[0])
+            else:
+                created_user_name = "ฉัน"
             #/******* Marker Like Data **********/
 
             get_marker_like_object = MarkerLike.objects.all().filter(markerlike_marker=marker_id)
@@ -39,7 +47,7 @@ def getPinDetailsLocationQuery(request):
             #/******* Bookmark Data *************/
             get_bookmark_object = Bookmark.objects.all().filter(bookmark_student=user_id,bookmark_marker=marker_id)
             isBookmarked = user_id in list(get_bookmark_object.values_list("bookmark_student",flat=True))
-            print("is bookemarked ,,,,,,,,,,,,,,,,,,, ",isBookmarked)
+            #print("is bookemarked ,,,,,,,,,,,,,,,,,,, ",isBookmarked)
 
             #/******* Comment Data **********/
             get_comment_object = Comment.objects.all().filter(comment_marker=marker_id)
@@ -103,6 +111,8 @@ def getPinDetailsLocationQuery(request):
             pinDetailsDict['isLiked'] = isLiked
             pinDetailsDict['comment'] = commentList
             pinDetailsDict['isBookmarked'] = isBookmarked
+            pinDetailsDict['isMyPin'] = isMyPin
+            pinDetailsDict['createdUserName'] = created_user_name
 
             print("Pin Details = ",pinDetailsDict)
 
@@ -323,6 +333,26 @@ def updateBookmakerLocationQuery(request):
             
             # saveLike = MarkerLike.objects.create(markerlike_marker=get_Marker,markerlike_student=get_User)
 
+        except Exception as e:
+            raise e
+            
+    return HttpResponse()
+
+
+@api_view(['POST'])
+def deleteMarkerLocationQuery(request):
+    if request.method == 'POST':
+        try:
+            data_dict = request.POST
+            data_dict = dataRefacter(data_dict)
+            user_id = returnUserIdFromToken(data_dict['token'])
+            marker_id = data_dict['id']
+
+            get_Marker = Marker.objects.get(id=int(marker_id))
+            get_Marker.enable = 0
+            get_Marker.save()
+
+            print("******************************** deleteMarkerLocationQuery *****************************")
         except Exception as e:
             raise e
             
