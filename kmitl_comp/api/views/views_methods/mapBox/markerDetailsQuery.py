@@ -15,7 +15,15 @@ from ....models import *
 #utils
 from ....utils import *
 
+#nextcloud
+import nextcloud_client
 
+imagenumber = 0
+nc = nextcloud_client.Client('http://nextcloud.shitduck.duckdns.org/')
+nc.login('pokemon', 'Pokemon19!!')
+from django.core.files.storage import default_storage
+from django.conf import settings
+from django.core.files.base import ContentFile
 #####################
 
 
@@ -353,6 +361,68 @@ def deleteMarkerLocationQuery(request):
             get_Marker.save()
 
             print("******************************** deleteMarkerLocationQuery *****************************")
+        except Exception as e:
+            raise e
+            
+    return HttpResponse()
+
+
+@api_view(['POST'])
+def editMarkerLocationQuery(request):
+    if request.method == 'POST':
+        try:
+            global imagenumber
+            data_dict = request.POST
+            data_dict = dataRefacter(data_dict)
+            imageUrl = list(request.POST.getlist('imageUrl'))
+            imageUrl = [s.strip('"') for s in imageUrl]
+            file = request.data.getlist('image')
+
+            id = data_dict['id']
+            name = data_dict['name']
+            type = data_dict['type']
+            description = data_dict['description']
+            #user_id = returnUserIdFromToken(data_dict['token'])
+            
+            #update marker
+            get_marker_object = Marker.objects.get(id=id)
+            get_marker_object.name = name
+            get_marker_object.description = description
+            get_marker_object.type = type
+            get_marker_object.save()
+
+
+            #reset image
+            get_image_object = Image.objects.filter(marker=id)
+            get_image_object.delete()
+
+            link = []
+
+            #update image
+            if file != []:
+                for index,file_ in enumerate(file):
+
+                    if file_ != 'null':
+                        path = default_storage.save(f'tmp/image.png', ContentFile(file_.read()))
+                        tmp_file = os.path.join(settings.MEDIA_ROOT, path)
+
+                        nc.put_file(f"KMITLcompanion/image{imagenumber}.png",tmp_file)
+                        link_info = nc.share_file_with_link(f'KMITLcompanion/image{imagenumber}.png')
+                        imagenumber = imagenumber+1
+                        link.append(link_info.get_link() + "/preview")
+                        #/*** remove tmp file ****/
+                        os.remove(settings.MEDIA_ROOT + tmp_file)
+                    else:
+                        link.append(imageUrl[index])
+
+            
+            print("******************************** editMarkerLocationQuery *****************************",file,imageUrl)
+            if link != []:
+                for _link in link:
+                    save_image = Image(marker=get_marker_object,link=_link)
+                    save_image.save()
+
+            print("******************************** editMarkerLocationQuery *****************************",data_dict)
         except Exception as e:
             raise e
             

@@ -13,6 +13,17 @@ from ....models import *
 #utils
 from ....utils import *
 
+#nextcloud
+import nextcloud_client
+
+imagenumber = 0
+nc = nextcloud_client.Client('http://nextcloud.shitduck.duckdns.org/')
+nc.login('pokemon', 'Pokemon19!!')
+from django.core.files.storage import default_storage
+from django.conf import settings
+from django.core.files.base import ContentFile
+#####################
+
 #<QueryDict: {'id': ['18'], 'token': ['eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYyMDEwODkzIiwiZW1haWwiOiI2MjAxMDg5M0BrbWl0bC5hYy50aCIsImV4cCI6MzU2MzAxMTMyNCwiaWF0IjoxNjcwODUxMzI0fQ.dxsOyXLIy-zGTcHXDBGwmJJz63nNxC9OspY41jtNWwQ']}>
 
 @api_view(['POST'])
@@ -154,6 +165,68 @@ def deleteEventLocationQuery(request):
             get_Marker.save()
         
             print("******************************** deleteEventLocationQuery *****************************")
+        except Exception as e:
+            raise e
+            
+    return HttpResponse()
+
+
+@api_view(['POST'])
+def editEventLocationQuery(request):
+    if request.method == 'POST':
+        try:
+            global imagenumber
+            data_dict = request.POST
+            data_dict = dataRefacter(data_dict)
+            imageUrl = list(request.POST.getlist('imageUrl'))
+            imageUrl = [s.strip('"') for s in imageUrl]
+            file = request.data.getlist('image')
+
+            id = data_dict['eventId']
+            name = data_dict['name']
+            description = data_dict['description']
+            #user_id = returnUserIdFromToken(data_dict['token'])
+            
+            #update marker
+            get_event_object = Event.objects.get(event_id=id)
+            get_event_object.eventname = name
+            get_event_object.description = description
+            get_event_object.save()
+
+
+            #reset image
+            get_image_object = ImageEvent.objects.filter(event=id)
+            get_image_object.delete()
+
+            link = []
+
+            #update image
+            if file != []:
+                for index,file_ in enumerate(file):
+
+                    if file_ != 'null':
+                        path = default_storage.save(f'tmp/image.png', ContentFile(file_.read()))
+                        tmp_file = os.path.join(settings.MEDIA_ROOT, path)
+
+                        nc.put_file(f"KMITLcompanion/image{imagenumber}.png",tmp_file)
+                        link_info = nc.share_file_with_link(f'KMITLcompanion/image{imagenumber}.png')
+                        imagenumber = imagenumber+1
+                        link.append(link_info.get_link() + "/preview")
+                        #/*** remove tmp file ****/
+                        os.remove(settings.MEDIA_ROOT + tmp_file)
+                    else:
+                        link.append(imageUrl[index])
+
+            
+            print("******************************** editMarkerLocationQuery *****************************",file,imageUrl)
+            if link != []:
+                for _link in link:
+                    save_image = ImageEvent(event=get_event_object,link=_link)
+                    save_image.save()
+
+
+        
+            print("******************************** editEventLocationQuery *****************************",data_dict)
         except Exception as e:
             raise e
             

@@ -81,4 +81,10 @@ urlpatterns = [
 
     #deleteeventlocationquery
     path('deleteeventlocationquery', views.mapBox.EventDetailsQuery.deleteEventLocationQuery),
+
+    #editmarkerlocationquery
+    path('editmarkerlocationquery', views.mapBox.MarkerDetailsQuery.editMarkerLocationQuery),
+
+    #editeventlocationquery
+    path('editeventlocationquery', views.mapBox.EventDetailsQuery.editEventLocationQuery),
 ]
