@@ -93,11 +93,32 @@ def getEventLocations(request):
 
 #{'name': ['""'], 'description': ['""'], 'status': ['"private"'], 'point': ['{"coordinates":[100.43714217283895,13.563551298705264],"type":"Point"}', '{"coordinates":[100.61192039687631,13.565510398593304],"type":"Point"}', '{"coordinates":[100.60792085751842,13.791609649391248],"type":"Point"}', '{"coordinates":[100.43915017202153,13.781890881272716],"type":"Point"}'], 'token': ['"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYyMDEwODkzIiwiZW1haWwiOiI2MjAxMDg5M0BrbWl0bC5hYy50aCIsImV4cCI6MzU2MzAxMTMyNCwiaWF0IjoxNjcwODUxMzI0fQ.dxsOyXLIy-zGTcHXDBGwmJJz63nNxC9OspY41jtNWwQ"']}
 
+# def post(self, request, *args, **kwargs):
+        
+#         file = request.FILES['file']
+#         marker_id = request.POST.get('marker_id')
+        
+#         # Save the image to default storage
+#         path = default_storage.save(f'tmp/image.png', ContentFile(file.read()))
+#         tmp_file = os.path.join(settings.MEDIA_ROOT, path)
+
+#         index = Image.objects.latest('image_id').image_id + 1
+
+#         nc.put_file(f"KMITLcompanion/image{index}.png", tmp_file)
+#         link_info = nc.share_file_with_link(f'KMITLcompanion/image{index}.png')
+        
+#         # Save the image data to the database
+#         image = Image.objects.create(marker_id=marker_id, link=f'{link_info.get_link()}/preview')
+#         serializer = self.get_serializer(image)
+
+#         os.remove(settings.MEDIA_ROOT + tmp_file)
+
+#         return Response(serializer.data)
+
 @api_view(['POST'])
 def createEventQuery(request):
     if request.method == 'POST':
         try:
-            global imagenumber
             data_dict = request.POST
             data_dict = dataRefacter(data_dict)
             point_dict = request.data.getlist('point')
@@ -110,15 +131,19 @@ def createEventQuery(request):
             link = []
 
             if file != []:
-                for file_ in file:
+                for _index,file_ in enumerate(file):
                     path = default_storage.save(f'tmp/image.png', ContentFile(file_.read()))
                     tmp_file = os.path.join(settings.MEDIA_ROOT, path)
 
-                    nc.put_file(f"KMITLcompanion/image{imagenumber}.png",tmp_file)
-                    link_info = nc.share_file_with_link(f'KMITLcompanion/image{imagenumber}.png')
-                    imagenumber = imagenumber+1
+                    index = ImageEvent.objects.latest('image_id').image_id + 1 + _index
+
+                    nc.put_file(f"KMITLcompanion/image{index}.png", tmp_file)
+                    link_info = nc.share_file_with_link(f'KMITLcompanion/image{index}.png')
+
+                    ##imagenumber = imagenumber+1
+
                     link.append(link_info.get_link() + "/preview")
-            #/*** remove tmp file ****/
+                    #/*** remove tmp file ****/
                     os.remove(settings.MEDIA_ROOT + tmp_file)
 
 
@@ -191,8 +216,6 @@ def getMapPoints(request):
 def createLocationQuery(request):
     if request.method == 'POST':
         try:
-
-            global imagenumber
             data_dict = request.POST
             data_dict = dataRefacter(data_dict)
             name = data_dict["name"]
@@ -207,15 +230,18 @@ def createLocationQuery(request):
             link = []
 
             if file != []:
-                for file_ in file:
+                for _index,file_ in enumerate(file):
                     path = default_storage.save(f'tmp/image.png', ContentFile(file_.read()))
                     tmp_file = os.path.join(settings.MEDIA_ROOT, path)
 
-                    nc.put_file(f"KMITLcompanion/image{imagenumber}.png",tmp_file)
-                    link_info = nc.share_file_with_link(f'KMITLcompanion/image{imagenumber}.png')
-                    imagenumber = imagenumber+1
+                    index = Image.objects.latest('image_id').image_id + 1 + _index
+
+                    nc.put_file(f"KMITLcompanion/image{index}.png", tmp_file)
+                    link_info = nc.share_file_with_link(f'KMITLcompanion/image{index}.png')
+
+
                     link.append(link_info.get_link() + "/preview")
-            #/*** remove tmp file ****/
+                    #/*** remove tmp file ****/
                     os.remove(settings.MEDIA_ROOT + tmp_file)
 
             get_User = User.objects.get(student_id=returnUserIdFromToken(data_dict['token']))
@@ -242,8 +268,6 @@ def createLocationQuery(request):
 def createPublicLocationQuery(request):
     if request.method == 'POST':
         try:
-
-            global imagenumber
             data_dict = request.POST
             data_dict = dataRefacter(data_dict)
             name = data_dict["name"]
@@ -258,17 +282,18 @@ def createPublicLocationQuery(request):
             link = []
 
             if file != []:
-                for file_ in file:
+                for _index,file_ in enumerate(file):
                     path = default_storage.save(f'tmp/image.png', ContentFile(file_.read()))
                     tmp_file = os.path.join(settings.MEDIA_ROOT, path)
 
-                    nc.put_file(f"KMITLcompanion/image{imagenumber}.png",tmp_file)
-                    link_info = nc.share_file_with_link(f'KMITLcompanion/image{imagenumber}.png')
-                    imagenumber = imagenumber+1
+                    index = Image.objects.latest('image_id').image_id + 1 + _index
+
+                    nc.put_file(f"KMITLcompanion/image{index}.png", tmp_file)
+                    link_info = nc.share_file_with_link(f'KMITLcompanion/image{index}.png')
+
                     link.append(link_info.get_link() + "/preview")
-            #/*** remove tmp file ****/
+                    #/*** remove tmp file ****/
                     os.remove(settings.MEDIA_ROOT + tmp_file)
-            #print(" --------------- > ",link)
 
             get_User = User.objects.get(student_id=returnUserIdFromToken(data_dict['token']))
             save_marker = Marker(name=name,

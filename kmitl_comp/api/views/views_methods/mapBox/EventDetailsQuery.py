@@ -175,7 +175,6 @@ def deleteEventLocationQuery(request):
 def editEventLocationQuery(request):
     if request.method == 'POST':
         try:
-            global imagenumber
             data_dict = request.POST
             data_dict = dataRefacter(data_dict)
             imageUrl = list(request.POST.getlist('imageUrl'))
@@ -202,20 +201,34 @@ def editEventLocationQuery(request):
 
             #update image
             if file != []:
-                for index,file_ in enumerate(file):
+                for _index,file_ in enumerate(file):
 
                     if file_ != 'null':
+
+                        # path = default_storage.save(f'tmp/image.png', ContentFile(file_.read()))
+                        # tmp_file = os.path.join(settings.MEDIA_ROOT, path)
+
+                        # nc.put_file(f"KMITLcompanion/image{imagenumber}.png",tmp_file)
+                        # link_info = nc.share_file_with_link(f'KMITLcompanion/image{imagenumber}.png')
+                        # imagenumber = imagenumber+1
+                        # link.append(link_info.get_link() + "/preview")
+                        # #/*** remove tmp file ****/
+                        # os.remove(settings.MEDIA_ROOT + tmp_file)
+
                         path = default_storage.save(f'tmp/image.png', ContentFile(file_.read()))
                         tmp_file = os.path.join(settings.MEDIA_ROOT, path)
 
-                        nc.put_file(f"KMITLcompanion/image{imagenumber}.png",tmp_file)
-                        link_info = nc.share_file_with_link(f'KMITLcompanion/image{imagenumber}.png')
-                        imagenumber = imagenumber+1
+                        index = ImageEvent.objects.latest('image_id').image_id + 1 + _index
+
+                        nc.put_file(f"KMITLcompanion/image{index}.png", tmp_file)
+                        link_info = nc.share_file_with_link(f'KMITLcompanion/image{index}.png')
+
                         link.append(link_info.get_link() + "/preview")
                         #/*** remove tmp file ****/
                         os.remove(settings.MEDIA_ROOT + tmp_file)
+
                     else:
-                        link.append(imageUrl[index])
+                        link.append(imageUrl[_index])
 
             
             print("******************************** editMarkerLocationQuery *****************************",file,imageUrl)
