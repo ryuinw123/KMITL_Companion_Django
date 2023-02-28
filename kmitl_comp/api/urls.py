@@ -87,4 +87,10 @@ urlpatterns = [
 
     #editeventlocationquery
     path('editeventlocationquery', views.mapBox.EventDetailsQuery.editEventLocationQuery),
+
+    #settingsgetuserdata
+    path('settingsgetuserdata', views.auth.UserSettings.settingsGetUserData),
+
+    #settingseditupdateuserdata
+    path('settingseditupdateuserdata', views.auth.UserSettings.settingsEditUpdateUserData),
 ]
