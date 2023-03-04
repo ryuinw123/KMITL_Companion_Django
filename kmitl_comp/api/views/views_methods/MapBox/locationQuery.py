@@ -14,7 +14,7 @@ import random
 import json
 import ast
 
-
+from PIL import Image as PILImage
 from ....models import *
 
 #utils
@@ -135,6 +135,15 @@ def createEventQuery(request):
                     path = default_storage.save(f'tmp/image.png', ContentFile(file_.read()))
                     tmp_file = os.path.join(settings.MEDIA_ROOT, path)
 
+                    # Resize the image and save
+                    image = PILImage.open(tmp_file)
+                    new_size = (300, 400)
+                    resized_image = image.resize(new_size)
+                    os.remove(settings.MEDIA_ROOT + tmp_file)
+                    resized_image.save(os.path.join(settings.MEDIA_ROOT, path))
+                    tmp_file = os.path.join(settings.MEDIA_ROOT, path)
+                    ############
+
                     index = ImageEvent.objects.latest('image_id').image_id + 1 + _index
 
                     nc.put_file(f"KMITLcompanion/image{index}.png", tmp_file)
@@ -231,14 +240,23 @@ def createLocationQuery(request):
 
             if file != []:
                 for _index,file_ in enumerate(file):
+
                     path = default_storage.save(f'tmp/image.png', ContentFile(file_.read()))
                     tmp_file = os.path.join(settings.MEDIA_ROOT, path)
+
+                    # Resize the image and save
+                    image = PILImage.open(tmp_file)
+                    new_size = (300, 400)
+                    resized_image = image.resize(new_size)
+                    os.remove(settings.MEDIA_ROOT + tmp_file)
+                    resized_image.save(os.path.join(settings.MEDIA_ROOT, path))
+                    tmp_file = os.path.join(settings.MEDIA_ROOT, path)
+                    ############
 
                     index = Image.objects.latest('image_id').image_id + 1 + _index
 
                     nc.put_file(f"KMITLcompanion/image{index}.png", tmp_file)
                     link_info = nc.share_file_with_link(f'KMITLcompanion/image{index}.png')
-
 
                     link.append(link_info.get_link() + "/preview")
                     #/*** remove tmp file ****/
@@ -285,6 +303,15 @@ def createPublicLocationQuery(request):
                 for _index,file_ in enumerate(file):
                     path = default_storage.save(f'tmp/image.png', ContentFile(file_.read()))
                     tmp_file = os.path.join(settings.MEDIA_ROOT, path)
+
+                    # Resize the image and save
+                    image = PILImage.open(tmp_file)
+                    new_size = (300, 400)
+                    resized_image = image.resize(new_size)
+                    os.remove(settings.MEDIA_ROOT + tmp_file)
+                    resized_image.save(os.path.join(settings.MEDIA_ROOT, path))
+                    tmp_file = os.path.join(settings.MEDIA_ROOT, path)
+                    ############
 
                     index = Image.objects.latest('image_id').image_id + 1 + _index
 

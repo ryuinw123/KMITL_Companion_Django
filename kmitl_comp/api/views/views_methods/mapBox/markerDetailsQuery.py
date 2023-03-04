@@ -9,6 +9,8 @@ from rest_framework.decorators import api_view
 import os
 import json
 
+from PIL import Image as PILImage
+
 #models
 from ....models import *
 
@@ -416,6 +418,15 @@ def editMarkerLocationQuery(request):
 
                         path = default_storage.save(f'tmp/image.png', ContentFile(file_.read()))
                         tmp_file = os.path.join(settings.MEDIA_ROOT, path)
+
+                        # Resize the image and save
+                        image = PILImage.open(tmp_file)
+                        new_size = (300, 400)
+                        resized_image = image.resize(new_size)
+                        os.remove(settings.MEDIA_ROOT + tmp_file)
+                        resized_image.save(os.path.join(settings.MEDIA_ROOT, path))
+                        tmp_file = os.path.join(settings.MEDIA_ROOT, path)
+                        ############
 
                         index = Image.objects.latest('image_id').image_id + 1 + _index
 
