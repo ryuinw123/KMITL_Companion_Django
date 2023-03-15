@@ -93,4 +93,11 @@ urlpatterns = [
 
     #settingseditupdateuserdata
     path('settingseditupdateuserdata', views.auth.UserSettings.settingsEditUpdateUserData),
+
+    #reporteventlocationquery
+    path('reporteventlocationquery', views.mapBox.ReportLocationQuery.reportEventLocationQuery),
+
+    #reportmarkerlocationquery
+    path('reportmarkerlocationquery', views.mapBox.ReportLocationQuery.reportMarkerLocationQuery),
+
 ]

@@ -99,6 +99,7 @@ class Event(models.Model):
     student = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True)
     createtime = models.DateTimeField(blank=True, null=True)
     enable = models.IntegerField(blank=True, null=True)
+    type = models.IntegerField(blank=True, null=True)
 
     class Meta:
         managed = False
@@ -124,6 +125,14 @@ class EventLike(models.Model):
         managed = False
         db_table = 'event_like'
         unique_together = (('event_like_event', 'event_like_student'),)
+
+class EventUrl(models.Model):
+    event_url = models.OneToOneField(Event, models.DO_NOTHING, primary_key=True)
+    url = models.TextField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'event_url'
 
 class Image(models.Model):
     image_id = models.AutoField(primary_key=True)
@@ -220,6 +229,30 @@ class PermissionMarker(models.Model):
         managed = False
         db_table = 'permission_marker'
 
+class ReportEvent(models.Model):
+    report_event_id = models.AutoField(primary_key=True)
+    event = models.ForeignKey(Event, models.DO_NOTHING)
+    reason = models.CharField(max_length=255, blank=True, null=True)
+    details = models.TextField(blank=True, null=True)
+    created_user = models.ForeignKey('User', models.DO_NOTHING, db_column='created_user')
+    created_time = models.DateTimeField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'report_event'
+
+
+class ReportMarker(models.Model):
+    report_marker_id = models.AutoField(primary_key=True)
+    id = models.ForeignKey(Marker, models.DO_NOTHING, db_column='id')
+    reason = models.CharField(max_length=255, blank=True, null=True)
+    details = models.TextField(blank=True, null=True)
+    created_user = models.ForeignKey('User', models.DO_NOTHING, db_column='created_user')
+    created_time = models.DateTimeField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'report_marker'
 
 
 
