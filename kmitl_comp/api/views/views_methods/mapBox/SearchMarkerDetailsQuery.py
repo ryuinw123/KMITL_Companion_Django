@@ -92,6 +92,7 @@ def getSearchDetailsQuery(request):
             typeList = data.getlist('typeList')
             typeList = [int(x) for x in typeList]
             typeList = returnTypeCodeToName(typeList)
+            
             text = newdata['text']
             
             latitude = newdata['lat']
@@ -151,6 +152,7 @@ def getSearchDetailsQuery(request):
             searchResultList = []
 
             for data in all_filterd_list:
+                print("xxxxxxxxxxxxxxxxxxxxxxx",data)
                 searchResultList.append(
                     {
                         "id" : data.get('event_id', data.get('id', None)),

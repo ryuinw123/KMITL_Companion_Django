@@ -186,13 +186,26 @@ def editEventLocationQuery(request):
             id = data_dict['eventId']
             name = data_dict['name']
             description = data_dict['description']
+            event_type = data_dict['type']
+            event_url_value = data_dict['url']
             #user_id = returnUserIdFromToken(data_dict['token'])
             
             #update marker
             get_event_object = Event.objects.get(event_id=id)
             get_event_object.eventname = name
             get_event_object.description = description
+            get_event_object.event_type = event_type
             get_event_object.save()
+
+            #update url link , if type == 1
+            if (event_type == "1"):
+                get_event_url_object = EventUrl(event_url=get_event_object,url=event_url_value)
+                get_event_url_object.save()
+            else:
+                get_event_url_object_list = list(EventUrl.objects.filter(event_url=id).values())
+                if (get_event_url_object_list != []):
+                    get_event_url_object = EventUrl.objects.get(event_url=get_event_object)
+                    get_event_url_object.delete()
 
 
             #reset image

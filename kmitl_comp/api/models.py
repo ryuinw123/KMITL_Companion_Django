@@ -99,7 +99,7 @@ class Event(models.Model):
     student = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True)
     createtime = models.DateTimeField(blank=True, null=True)
     enable = models.IntegerField(blank=True, null=True)
-    type = models.IntegerField(blank=True, null=True)
+    event_type = models.IntegerField(blank=True, null=True)
 
     class Meta:
         managed = False
@@ -233,7 +233,7 @@ class ReportEvent(models.Model):
     report_event_id = models.AutoField(primary_key=True)
     event = models.ForeignKey(Event, models.DO_NOTHING)
     reason = models.CharField(max_length=255, blank=True, null=True)
-    details = models.TextField(blank=True, null=True)
+    details = models.CharField(max_length=450, blank=True, null=True)
     created_user = models.ForeignKey('User', models.DO_NOTHING, db_column='created_user')
     created_time = models.DateTimeField(blank=True, null=True)
 
@@ -246,7 +246,7 @@ class ReportMarker(models.Model):
     report_marker_id = models.AutoField(primary_key=True)
     id = models.ForeignKey(Marker, models.DO_NOTHING, db_column='id')
     reason = models.CharField(max_length=255, blank=True, null=True)
-    details = models.TextField(blank=True, null=True)
+    details = models.CharField(max_length=450, blank=True, null=True)
     created_user = models.ForeignKey('User', models.DO_NOTHING, db_column='created_user')
     created_time = models.DateTimeField(blank=True, null=True)
 

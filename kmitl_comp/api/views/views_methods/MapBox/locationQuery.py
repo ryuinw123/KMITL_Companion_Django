@@ -66,11 +66,14 @@ def getEventLocations(request):
     now = datetime.now()
 
     get_event_obj = Event.objects.all().filter(enable=1,endtime__gte=now)
-    event_list = list(get_event_obj.values("event_id","eventname","description","starttime","endtime","polygon"))
+    event_list = list(get_event_obj.values("event_id","eventname","description","starttime","endtime","polygon","event_type"))
 
     get_image_event = list(ImageEvent.objects.filter(event__in=list(get_event_obj.values_list('event_id',flat=True))).values("event","link"))
+    get_url_event = list(EventUrl.objects.filter(event_url__in=list(get_event_obj.values_list('event_id',flat=True))).values("event_url","url"))
 
     returnListDict = []
+
+    #print("xxxxxxxxxxxxxxx",get_url_event)
 
     for event in event_list:
         event_polygon = ast.literal_eval(event['polygon'])
@@ -84,6 +87,9 @@ def getEventLocations(request):
                 'endTime': event['endtime'].strftime("%d/%m/%Y %H:%M"),#.strftime("%d/%m/%Y %H:%M")
                 'area': event_polygon_list,
                 'imageLink': [sub['link'] for sub in get_image_event if sub['event'] == event['event_id']],
+                'type':event['event_type'],
+                #'url': next((item for item in get_url_event if item["event_url"] == event['event_id']), "xxx"),
+                'url':[sub['url'] for sub in get_url_event if sub['event_url'] == event['event_id']],
             }
         )
 
@@ -127,6 +133,8 @@ def createEventQuery(request):
             event_des = data_dict['description']
             event_start = data_dict['startTime']
             event_end = data_dict['endTime']
+            event_type = data_dict['type']
+            event_url = data_dict['url']
             file = request.data.getlist('image')
             link = []
 
@@ -173,6 +181,7 @@ def createEventQuery(request):
                             student=get_User,
                             createtime=datetime.now(),
                             enable=1,
+                            event_type=event_type,
                             )
             save_event.save()
 
@@ -180,6 +189,10 @@ def createEventQuery(request):
                 for _link in link:
                     save_image = ImageEvent(event=save_event,link=_link)
                     save_image.save()
+
+            if event_url != "":
+                save_event_url = EventUrl(event_url=save_event,url=event_url)
+                save_event_url.save()
 
             print("eventdictxxxxxxxxxxxxxxxxxxxxxxxxxxxx",data_dict)
             
