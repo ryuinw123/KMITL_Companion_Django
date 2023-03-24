@@ -27,6 +27,8 @@ def returnTypeCodeToName(listOfTypeCode):
         3 : "ร้านค้า",
         4 : "ตึก",
         5 : "หอพัก",
+        6 : "ห้องน้ำ",
+        7 : "ธนาคาร",
         99 : "ทั่วไป",
         100 : 100, #bookmark
         969 : 969, #event
@@ -49,6 +51,8 @@ def returnNameToTypeCode(name):
         3 : "ร้านค้า",
         4 : "ตึก",
         5 : "หอพัก",
+        6 : "ห้องน้ำ",
+        7 : "ธนาคาร",
         99 : "ทั่วไป",
         100 : 100, #bookmark
         969 : 969, #event
