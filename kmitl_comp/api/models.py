@@ -78,17 +78,6 @@ class CommentLike(models.Model):
         unique_together = (('cl_comment', 'cl_student'),)
 
 
-class Emergency(models.Model):
-    contact_id = models.AutoField(primary_key=True)
-    contact_number = models.CharField(max_length=45, blank=True, null=True)
-    contact_name = models.CharField(max_length=45, blank=True, null=True)
-    contact_admin_username = models.ForeignKey(Admin, models.DO_NOTHING, db_column='contact_admin_username', blank=True, null=True)
-    createdtime = models.DateTimeField(blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'emergency'
-
 class Event(models.Model):
     event_id = models.AutoField(primary_key=True)
     eventname = models.CharField(max_length=255)
@@ -152,23 +141,6 @@ class ImageEvent(models.Model):
         managed = False
         db_table = 'image_event'
 
-class Issue(models.Model):
-    issue_id = models.AutoField(primary_key=True)
-    description = models.TextField(blank=True, null=True)
-    imageurl = models.TextField(blank=True, null=True)
-    createtime = models.DateTimeField(blank=True, null=True)
-    issue_user = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True)
-    issue_marker = models.ForeignKey('Marker', models.DO_NOTHING, blank=True, null=True)
-    issue_approve_admin_username = models.ForeignKey(Admin, models.DO_NOTHING, db_column='issue_approve_admin_username',related_name='issue_approve_admin_username', blank=True, null=True)
-    issue_broadcast_admin_username = models.ForeignKey(Admin, models.DO_NOTHING, db_column ='issue_broadcast_admin_username',related_name='issue_broadcast_admin_username', blank=True, null=True)
-    broadcasttime = models.DateTimeField(blank=True, null=True)
-    approvetime = models.DateTimeField(blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'issue'
-
-
 class Marker(models.Model):
     name = models.CharField(max_length=255, blank=True, null=True)
     place = models.CharField(max_length=255, blank=True, null=True)
@@ -194,21 +166,6 @@ class MarkerLike(models.Model):
         managed = False
         db_table = 'marker_like'
         unique_together = (('markerlike_student', 'markerlike_marker'),)
-
-
-class News(models.Model):
-    news_id = models.AutoField(primary_key=True)
-    header = models.TextField(blank=True, null=True)
-    body = models.TextField(blank=True, null=True)
-    imageurl = models.TextField(blank=True, null=True)
-    createdtime = models.DateTimeField(blank=True, null=True)
-    n_created_admin_username = models.ForeignKey(Admin, models.DO_NOTHING, db_column='n_created_admin_username',related_name='n_created_admin_username', blank=True, null=True)
-    n_broadcast_admin_username = models.ForeignKey(Admin, models.DO_NOTHING, db_column="n_broadcast_admin_username",related_name ='n_broadcast_admin_username', blank=True, null=True)
-    broadcasttime = models.DateTimeField(blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'news'
 
 
 class Permission(models.Model):
