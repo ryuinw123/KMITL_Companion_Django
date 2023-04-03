@@ -281,6 +281,7 @@ def createLocationQuery(request):
                             address=address,
                             latitude=latitude,longitude=longitude,
                             description=description,
+                            createtime=datetime.now(),
                             type=type,
                             created_user=get_User,)
             save_marker.save()

@@ -10,7 +10,8 @@ import os
 import json
 
 from PIL import Image as PILImage
-
+from datetime import datetime, timedelta
+import pytz
 #models
 from ....models import *
 
@@ -448,6 +449,35 @@ def editMarkerLocationQuery(request):
                     save_image.save()
 
             print("******************************** editMarkerLocationQuery *****************************",data_dict)
+        except Exception as e:
+            raise e
+            
+    return HttpResponse()
+
+
+       
+@api_view(['POST'])
+def checkValidCreateMarkerCount(request):
+    if request.method == 'POST':
+        try:
+            data_dict = request.POST
+            data_dict = dataRefacter(data_dict)
+            user_id = returnUserIdFromToken(data_dict['token'])
+
+            #print("check Valid create marker count " , user_id, data_dict)
+
+            get_public_marker_obj = PermissionMarker.objects.all().values_list("pm_maker",flat=True)
+            get_marker_obj = Marker.objects.all().filter(id__in=list(get_public_marker_obj),created_user_id=user_id)
+
+            all_created_time_marker = get_marker_obj.values_list("createtime",flat=True)
+            list_of_all_created_time_marker = list(all_created_time_marker)
+
+            list_of_marker_in_week = [dt for dt in list_of_all_created_time_marker if dt > getWeeklyReset()]
+            validCount = 3 - len(list_of_marker_in_week)
+            #print(validCount)
+
+            return JsonResponse(validCount,safe = False)
+
         except Exception as e:
             raise e
             

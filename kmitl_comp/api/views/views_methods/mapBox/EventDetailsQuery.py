@@ -268,3 +268,34 @@ def editEventLocationQuery(request):
             raise e
             
     return HttpResponse()
+
+
+
+
+@api_view(['POST'])
+def checkValidCreateEventCount(request):
+    if request.method == 'POST':
+        try:
+            data_dict = request.POST
+            data_dict = dataRefacter(data_dict)
+            user_id = returnUserIdFromToken(data_dict['token'])
+
+            #print("check Valid create event count " , user_id, data_dict)
+            get_event_obj = Event.objects.all().filter(student=user_id)
+
+            all_created_time_event = get_event_obj.values_list("createtime",flat=True)
+            list_of_all_created_time_event = list(all_created_time_event)
+
+            list_of_event_in_week = [dt for dt in list_of_all_created_time_event if dt > getWeeklyReset()]
+            validCount = 3 - len(list_of_event_in_week)
+
+            return JsonResponse(validCount,safe = False)
+
+        except Exception as e:
+            raise e
+            
+    return HttpResponse()
+
+
+
+

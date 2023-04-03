@@ -100,4 +100,10 @@ urlpatterns = [
     #reportmarkerlocationquery
     path('reportmarkerlocationquery', views.mapBox.ReportLocationQuery.reportMarkerLocationQuery),
 
+    #checkvalidcreatemarkercount
+    path('checkvalidcreatemarkercount', views.mapBox.MarkerDetailsQuery.checkValidCreateMarkerCount),
+
+    #checkvalidcreateeventcount
+    path('checkvalidcreateeventcount', views.mapBox.EventDetailsQuery.checkValidCreateEventCount),
+
 ]

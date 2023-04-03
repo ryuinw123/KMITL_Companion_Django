@@ -2,6 +2,10 @@
 from copy import deepcopy
 import jwt
 
+from datetime import datetime, timedelta
+import pytz
+
+
 def dataRefacter(data_):
     data = deepcopy(data_)
     del data_
@@ -18,6 +22,14 @@ def dataRefacter(data_):
 def returnUserIdFromToken(token) -> int:
     return int(jwt.decode(token, 'secret', algorithms=['HS256'])['id'])
 
+
+def getWeeklyReset():
+    nowTime = datetime.now(pytz.timezone('Asia/Jakarta'))
+    #print("nowtime",nowTime)
+    daysToMonday = (nowTime.weekday()) % 7
+    lastMonday = nowTime - timedelta(days=daysToMonday, hours=nowTime.hour, minutes=nowTime.minute, seconds=nowTime.second, microseconds=nowTime.microsecond)
+
+    return lastMonday
 
 def returnTypeCodeToName(listOfTypeCode):
     typeCode = {
