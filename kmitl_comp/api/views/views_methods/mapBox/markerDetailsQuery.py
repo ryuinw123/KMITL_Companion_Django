@@ -125,7 +125,7 @@ def getPinDetailsLocationQuery(request):
             pinDetailsDict['isMyPin'] = isMyPin
             pinDetailsDict['createdUserName'] = created_user_name
 
-            print("Pin Details = ",pinDetailsDict)
+            #print("Pin Details = ",pinDetailsDict)
 
             return JsonResponse(pinDetailsDict,safe = False)
 
@@ -143,7 +143,7 @@ def likeLocationQuery(request):
             data_dict = dataRefacter(data_dict)
             user_id = returnUserIdFromToken(data_dict['token'])
             marker_id = data_dict['id']
-            print("likeLocationQuery")
+            #print("likeLocationQuery")
 
             get_User = User.objects.get(student_id=user_id)
             get_Marker = Marker.objects.get(id=int(marker_id))
@@ -164,7 +164,7 @@ def dislikeLocationQuery(request):
             data_dict = dataRefacter(data_dict)
             user_id = returnUserIdFromToken(data_dict['token'])
             marker_id = data_dict['id']
-            print("dislikeLocationQuery")
+            #print("dislikeLocationQuery")
 
             get_User = User.objects.get(student_id=user_id)
             get_Marker = Marker.objects.get(id=int(marker_id))
@@ -194,7 +194,7 @@ def addCommentMarkerLocationQuery(request):
             saveComment.save()
             
             returnDict = {"commentId":saveComment.comment_id,"author":get_User.firstname + " " + get_User.lastname}
-            print("add Comment pin at ",returnDict)
+            #print("add Comment pin at ",returnDict)
             return JsonResponse(returnDict,safe = False)
         except Exception as e:
             raise e
@@ -218,7 +218,7 @@ def addCommentMarkerLocationQuery(request):
             saveComment.save()
             
             returnDict = {"commentId":saveComment.comment_id,"author":get_User.firstname + " " + get_User.lastname}
-            print("add Comment pin at ",returnDict)
+            #print("add Comment pin at ",returnDict)
             return JsonResponse(returnDict,safe = False)
         except Exception as e:
             raise e
@@ -238,7 +238,7 @@ def editCommentMarkerLocationQuery(request):
 
             Comment.objects.filter(comment_id=marker_id).update(comment_id=marker_id,content=comment,createtime=datetime.now())
             
-            print("add Comment pin at ",data_dict)
+            #print("add Comment pin at ",data_dict)
             # return JsonResponse(returnDict,safe = False)
         except Exception as e:
             raise e
@@ -257,7 +257,7 @@ def deleteCommentMarkerLocationQuery(request):
             delCommentLike = CommentLike.objects.filter(cl_comment=comment_id).delete()
             delComment = Comment.objects.filter(comment_id=comment_id).delete()
 
-            print("delete Comment pin at ",delComment)
+            #print("delete Comment pin at ",delComment)
 
         except Exception as e:
             raise e
@@ -274,14 +274,14 @@ def likeDislikeCommentMarkerLocationQuery(request):
             comment_id = data_dict['id']
             is_like = int(data_dict['isLikedComment'])
             is_dislike = int(data_dict['isDisLikedComment'])
-            print("likedislike Comment pin at ")
+            #print("likedislike Comment pin at ")
 
             get_comment = Comment.objects.get(comment_id=comment_id)
             get_User = User.objects.get(student_id=user_id)
 
             get_commentlike = CommentLike.objects.filter(cl_comment=get_comment,cl_student=get_User)
             if (is_like == 0 and is_dislike == 0):
-                print("delete")
+                #print("delete")
                 get_commentlike.delete()
             else:
 
@@ -307,7 +307,7 @@ def getAllBookmakerLocationQuery(request):
             #get_User = User.objects.get(student_id=user_id)
             get_bookmark_object = Bookmark.objects.all().filter(bookmark_student=user_id)
             bookmarkList = list(get_bookmark_object.values_list("bookmark_marker",flat=True))
-            print("getAllBookmakerLocationQuery",bookmarkList)
+            #print("getAllBookmakerLocationQuery",bookmarkList)
 
 
             return JsonResponse(bookmarkList,safe = False)
@@ -329,13 +329,13 @@ def updateBookmakerLocationQuery(request):
             marker_id = data_dict['markerId']
             is_bookmarked = data_dict['isBookmarked']
 
-            print("updateBookmaker",data_dict)
+            #print("updateBookmaker",data_dict)
             get_User = User.objects.get(student_id=user_id)
             get_Marker = Marker.objects.get(id=int(marker_id))
 
             if(is_bookmarked == 'true'): #create
                 saveBookmark = Bookmark.objects.create(bookmark_student=get_User,bookmark_marker=get_Marker,createtime=datetime.now())
-                print("save Bookamerk ",saveBookmark)
+                #print("save Bookamerk ",saveBookmark)
             elif(is_bookmarked == 'false'):
                 getBookmark = Bookmark.objects.filter(bookmark_student=user_id,bookmark_marker=marker_id)
                 getBookmark.delete()
@@ -363,7 +363,7 @@ def deleteMarkerLocationQuery(request):
             get_Marker.enable = 0
             get_Marker.save()
 
-            print("******************************** deleteMarkerLocationQuery *****************************")
+            #print("******************************** deleteMarkerLocationQuery *****************************")
         except Exception as e:
             raise e
             
@@ -442,13 +442,13 @@ def editMarkerLocationQuery(request):
                         link.append(imageUrl[_index])
 
             
-            print("******************************** editMarkerLocationQuery *****************************",file,imageUrl)
+            #print("******************************** editMarkerLocationQuery *****************************",file,imageUrl)
             if link != []:
                 for _link in link:
                     save_image = Image(marker=get_marker_object,link=_link)
                     save_image.save()
 
-            print("******************************** editMarkerLocationQuery *****************************",data_dict)
+            #print("******************************** editMarkerLocationQuery *****************************",data_dict)
         except Exception as e:
             raise e
             

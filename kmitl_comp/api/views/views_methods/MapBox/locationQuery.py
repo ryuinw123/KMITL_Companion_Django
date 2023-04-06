@@ -194,7 +194,7 @@ def createEventQuery(request):
                 save_event_url = EventUrl(event_url=save_event,url=event_url)
                 save_event_url.save()
 
-            print("eventdictxxxxxxxxxxxxxxxxxxxxxxxxxxxx",data_dict)
+            #print("eventdictxxxxxxxxxxxxxxxxxxxxxxxxxxxx",data_dict)
             
 
         except Exception as e:

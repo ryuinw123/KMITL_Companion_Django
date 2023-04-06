@@ -87,7 +87,7 @@ def getAllEventBookMarker(request):
             get_event_bookmark_object = EventBookmark.objects.all().filter(event_bookmark_student=user_id)
             bookmarkList = list(get_event_bookmark_object.values_list("event_bookmark_event",flat=True))
 
-            print("getAllEventBookMarker =>>>>>>>>",bookmarkList)
+            #print("getAllEventBookMarker =>>>>>>>>",bookmarkList)
 
             return JsonResponse(bookmarkList,safe = False)
 
@@ -109,7 +109,7 @@ def changeEventLikeLocationQuery(request):
             user_id = returnUserIdFromToken(data_dict['token'])
             event_id = data_dict['eventId']
             is_liked = data_dict['isLiked']
-            print("changeEventLikeLocationQuery => ",data_dict)
+            #print("changeEventLikeLocationQuery => ",data_dict)
 
             if is_liked == "true":
                 get_User = User.objects.get(student_id=user_id)
@@ -136,17 +136,17 @@ def changeEventBookmarkLocationQuery(request):
             user_id = returnUserIdFromToken(data_dict['token'])
             event_id = data_dict['eventId']
             is_mark = data_dict['isMark']
-            print("changeEventBookmarkLocationQuery => ",data_dict)
+            #print("changeEventBookmarkLocationQuery => ",data_dict)
 
             if is_mark == "true":
                 get_User = User.objects.get(student_id=user_id)
                 get_Event = Event.objects.get(event_id=int(event_id))
                 saveLike = EventBookmark.objects.create(event_bookmark_event=get_Event,event_bookmark_student=get_User,createtime=datetime.now())
-                print("bookmark true")
+                #print("bookmark true")
             elif is_mark == "false":
                 get_event_like_object = EventBookmark.objects.all().filter(event_bookmark_event=event_id,event_bookmark_student=user_id)
                 get_event_like_object.delete()
-                print("bookmark false")
+                #print("bookmark false")
 
         except Exception as e:
             raise e
@@ -166,7 +166,7 @@ def deleteEventLocationQuery(request):
             get_Marker.enable = 0
             get_Marker.save()
         
-            print("******************************** deleteEventLocationQuery *****************************")
+            #print("******************************** deleteEventLocationQuery *****************************")
         except Exception as e:
             raise e
             
@@ -255,7 +255,7 @@ def editEventLocationQuery(request):
                         link.append(imageUrl[_index])
 
             
-            print("******************************** editMarkerLocationQuery *****************************",file,imageUrl)
+            #print("******************************** editMarkerLocationQuery *****************************",file,imageUrl)
             if link != []:
                 for _link in link:
                     save_image = ImageEvent(event=get_event_object,link=_link)
@@ -263,7 +263,7 @@ def editEventLocationQuery(request):
 
 
         
-            print("******************************** editEventLocationQuery *****************************",data_dict)
+            #print("******************************** editEventLocationQuery *****************************",data_dict)
         except Exception as e:
             raise e
             

@@ -152,7 +152,7 @@ def getSearchDetailsQuery(request):
             searchResultList = []
 
             for data in all_filterd_list:
-                print("xxxxxxxxxxxxxxxxxxxxxxx",data)
+                #print("xxxxxxxxxxxxxxxxxxxxxxx",data)
                 searchResultList.append(
                     {
                         "id" : data.get('event_id', data.get('id', None)),

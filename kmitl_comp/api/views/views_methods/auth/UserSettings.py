@@ -35,7 +35,7 @@ def settingsGetUserData(request):
         
 
             return JsonResponse(returnDict,safe=False)
-            print("******************************** settingsGetUserData *****************************",get_user_object)
+            #print("******************************** settingsGetUserData *****************************",get_user_object)
         except Exception as e:
             raise e
             
@@ -65,8 +65,7 @@ def settingsEditUpdateUserData(request):
             get_user_object.year = year
             get_user_object.save()
 
-            print("******************************** settingsEditUpdateUserData *****************************",
-                   get_user_object.faculty)
+            #print("******************************** settingsEditUpdateUserData *****************************",get_user_object.faculty)
         except Exception as e:
             raise e
             
