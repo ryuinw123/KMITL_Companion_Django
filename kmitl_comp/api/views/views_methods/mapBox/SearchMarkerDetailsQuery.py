@@ -15,6 +15,7 @@ import re as re
 from django.db.models import Q
 import math
 import ast
+import datetime as dt
 #models
 from ....models import *
 
@@ -115,9 +116,10 @@ def getSearchDetailsQuery(request):
             
             get_event_object = Event.objects.none()
             now = datetime.now()
+            thirty_days_from_now = now + dt.timedelta(30)
             #ถ้ามี event ใน type
             if (969 in typeList):
-                get_event_object = Event.objects.all().filter(enable=1,endtime__gte=now)
+                get_event_object = Event.objects.all().filter(enable=1,endtime__gte=now,starttime__lte=thirty_days_from_now).union(Event.objects.all().filter(enable=1,endtime__gte=now,student=user_id))
 
 
             #ถ้า มี bookmark ใน type
@@ -131,7 +133,7 @@ def getSearchDetailsQuery(request):
                 
                 get_event_bookmark_object = EventBookmark.objects.all().filter(event_bookmark_student=user_id)
                 eventList = list(get_event_bookmark_object.values_list("event_bookmark_event",flat=True))
-                get_event_object = get_event_object.union(Event.objects.all().filter(enable=1,endtime__gte=now,event_id__in=eventList))
+                get_event_object = get_event_object.union(Event.objects.all().filter(enable=1,endtime__gte=now,starttime__lte=thirty_days_from_now,event_id__in=eventList)).union(Event.objects.all().filter(enable=1,endtime__gte=now,student=user_id))
 
 
             all_marker_list = list(get_marker_obj.values())

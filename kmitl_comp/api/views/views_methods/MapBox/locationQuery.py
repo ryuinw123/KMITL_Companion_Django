@@ -14,6 +14,8 @@ import random
 import json
 import ast
 
+import datetime as dt
+
 from PIL import Image as PILImage
 from ....models import *
 
@@ -62,10 +64,12 @@ imagenumber = 0
 def getEventLocations(request):
 
     token = request.GET.get('token')
+    user_id = returnUserIdFromToken(token)
 
     now = datetime.now()
+    thirty_days_from_now = now + dt.timedelta(30)
 
-    get_event_obj = Event.objects.all().filter(enable=1,endtime__gte=now)
+    get_event_obj = Event.objects.all().filter(enable=1,endtime__gte=now,starttime__lte=thirty_days_from_now).union(Event.objects.all().filter(enable=1,endtime__gte=now,student=user_id))
     event_list = list(get_event_obj.values("event_id","eventname","description","starttime","endtime","polygon","event_type"))
 
     get_image_event = list(ImageEvent.objects.filter(event__in=list(get_event_obj.values_list('event_id',flat=True))).values("event","link"))
