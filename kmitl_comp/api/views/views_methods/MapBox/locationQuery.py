@@ -347,7 +347,8 @@ def createPublicLocationQuery(request):
                             latitude=latitude,longitude=longitude,
                             description=description,
                             type=type,
-                            created_user=get_User,)
+                            created_user=get_User,
+                            createtime=datetime.now())
             save_marker.save()
 
             if link != []:
