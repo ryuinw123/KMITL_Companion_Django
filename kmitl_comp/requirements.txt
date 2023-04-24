@@ -11,6 +11,7 @@ django-api-decorators==0.0.3
 django-cors-headers==3.13.0
 django-oauth-toolkit==2.1.0
 djangorestframework==3.14.0
+djangorestframework-simplejwt==5.2.2
 google-api-core==2.10.1
 google-api-python-client==2.63.0
 google-auth==2.12.0
@@ -24,6 +25,7 @@ jwcrypto==1.4.2
 mssql-django==1.1.3
 mysqlclient==2.1.1
 oauthlib==3.2.1
+Pillow==9.4.0
 protobuf==4.21.7
 pyasn1==0.4.8
 pyasn1-modules==0.2.8
