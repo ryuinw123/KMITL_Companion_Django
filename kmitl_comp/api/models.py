@@ -7,6 +7,7 @@
 # Feel free to rename the models, but don't rename db_table values or field names.
 from django.db import models
 from singleton_decorator import singleton
+from datetime import datetime
 
 #/****** Store Class ********/
 @singleton
@@ -15,32 +16,6 @@ class GoogleAuthConsoleData:
         self.client_id = "563509002084-b7m05boiaqs5mo0thi4ka59noiakeus2.apps.googleusercontent.com"
         self.client_secret = "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"
         self.redirect_url = "http://shitduck.duckdns.org:8000/accounts/google/login/callback/"
-# @singleton
-# class AuthDataStore:
-#     def __init__(self):
-#         self.name = ""
-#         self.hd = ""
-#         self.email = ""
-#         self.picture = ""
-#         self.given_name = ""
-#         self.family_name = ""
-#         self.locale = ""
-
-#     def setName(self,name):
-#         self.name = name
-   
-#     # def setGivenName(self,given_name):
-#     #     self.given_name = given_name
-
-#     # def setEmail(self,email):
-#     #     self.email = email
-
-#     # def setGivenName(self,given_name):
-#     #     self.given_name = given_name
-
-#     # def getName(self) -> str:
-#     #     return
-
 
 #/****** Model Class ********/
 
@@ -68,80 +43,10 @@ class Admin(models.Model):
         managed = False
         db_table = 'admin'
 
-
-class AuthGroup(models.Model):
-    name = models.CharField(unique=True, max_length=150)
-
-    class Meta:
-        managed = False
-        db_table = 'auth_group'
-
-
-class AuthGroupPermissions(models.Model):
-    id = models.BigAutoField(primary_key=True)
-    group = models.ForeignKey(AuthGroup, models.DO_NOTHING)
-    permission = models.ForeignKey('AuthPermission', models.DO_NOTHING)
-
-    class Meta:
-        managed = False
-        db_table = 'auth_group_permissions'
-        unique_together = (('group', 'permission'),)
-
-
-class AuthPermission(models.Model):
-    name = models.CharField(max_length=255)
-    content_type = models.ForeignKey('DjangoContentType', models.DO_NOTHING)
-    codename = models.CharField(max_length=100)
-
-    class Meta:
-        managed = False
-        db_table = 'auth_permission'
-        unique_together = (('content_type', 'codename'),)
-
-
-class AuthUser(models.Model):
-    password = models.CharField(max_length=128)
-    last_login = models.DateTimeField(blank=True, null=True)
-    is_superuser = models.IntegerField()
-    username = models.CharField(unique=True, max_length=150)
-    first_name = models.CharField(max_length=150)
-    last_name = models.CharField(max_length=150)
-    email = models.CharField(max_length=254)
-    is_staff = models.IntegerField()
-    is_active = models.IntegerField()
-    date_joined = models.DateTimeField()
-
-    class Meta:
-        managed = False
-        db_table = 'auth_user'
-
-
-class AuthUserGroups(models.Model):
-    id = models.BigAutoField(primary_key=True)
-    user = models.ForeignKey(AuthUser, models.DO_NOTHING)
-    group = models.ForeignKey(AuthGroup, models.DO_NOTHING)
-
-    class Meta:
-        managed = False
-        db_table = 'auth_user_groups'
-        unique_together = (('user', 'group'),)
-
-
-class AuthUserUserPermissions(models.Model):
-    id = models.BigAutoField(primary_key=True)
-    user = models.ForeignKey(AuthUser, models.DO_NOTHING)
-    permission = models.ForeignKey(AuthPermission, models.DO_NOTHING)
-
-    class Meta:
-        managed = False
-        db_table = 'auth_user_user_permissions'
-        unique_together = (('user', 'permission'),)
-
-
 class Bookmark(models.Model):
     bookmark_student = models.OneToOneField('User', models.DO_NOTHING, primary_key=True)
     bookmark_marker = models.ForeignKey('Marker', models.DO_NOTHING)
-    createtime = models.DateTimeField(blank=True, null=True)
+    createtime = models.DateTimeField(default=datetime.now(),blank=True, null=True)
 
     class Meta:
         managed = False
@@ -154,7 +59,7 @@ class Comment(models.Model):
     content = models.TextField(blank=True, null=True)
     comment_marker = models.ForeignKey('Marker', models.DO_NOTHING, blank=True, null=True)
     comment_student = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True)
-    createtime = models.DateTimeField(blank=True, null=True)
+    createtime = models.DateTimeField(default=datetime.now(),blank=True, null=True)
 
     class Meta:
         managed = False
@@ -162,128 +67,100 @@ class Comment(models.Model):
 
 
 class CommentLike(models.Model):
-    cl_comment = models.ForeignKey(Comment, models.DO_NOTHING)
+    cl_comment = models.OneToOneField(Comment, models.DO_NOTHING, primary_key=True)
     cl_student = models.ForeignKey('User', models.DO_NOTHING)
-    createtime = models.DateTimeField(blank=True, null=True)
+    islike = models.IntegerField(db_column='isLike', blank=True, null=True)  # Field name made lowercase.
+    createtime = models.DateTimeField(default=datetime.now(),blank=True, null=True)
 
     class Meta:
         managed = False
         db_table = 'comment_like'
-
-
-class DjangoAdminLog(models.Model):
-    action_time = models.DateTimeField()
-    object_id = models.TextField(blank=True, null=True)
-    object_repr = models.CharField(max_length=200)
-    action_flag = models.PositiveSmallIntegerField()
-    change_message = models.TextField()
-    content_type = models.ForeignKey('DjangoContentType', models.DO_NOTHING, blank=True, null=True)
-    user = models.ForeignKey(AuthUser, models.DO_NOTHING)
-
-    class Meta:
-        managed = False
-        db_table = 'django_admin_log'
-
-
-class DjangoContentType(models.Model):
-    app_label = models.CharField(max_length=100)
-    model = models.CharField(max_length=100)
-
-    class Meta:
-        managed = False
-        db_table = 'django_content_type'
-        unique_together = (('app_label', 'model'),)
-
-
-class DjangoMigrations(models.Model):
-    id = models.BigAutoField(primary_key=True)
-    app = models.CharField(max_length=255)
-    name = models.CharField(max_length=255)
-    applied = models.DateTimeField()
-
-    class Meta:
-        managed = False
-        db_table = 'django_migrations'
-
-
-class DjangoSession(models.Model):
-    session_key = models.CharField(primary_key=True, max_length=40)
-    session_data = models.TextField()
-    expire_date = models.DateTimeField()
-
-    class Meta:
-        managed = False
-        db_table = 'django_session'
-
-
-class Emergency(models.Model):
-    contact_id = models.AutoField(primary_key=True)
-    contact_number = models.CharField(max_length=45, blank=True, null=True)
-    contact_name = models.CharField(max_length=45, blank=True, null=True)
-    contact_admin_username = models.ForeignKey(Admin, models.DO_NOTHING, db_column='contact_admin_username', blank=True, null=True)
-    createdtime = models.DateTimeField(blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'emergency'
+        unique_together = (('cl_comment', 'cl_student'),)
 
 
 class Event(models.Model):
     event_id = models.AutoField(primary_key=True)
     eventname = models.CharField(max_length=255)
+    description = models.TextField(blank=True, null=True)
     starttime = models.DateTimeField(blank=True, null=True)
     endtime = models.DateTimeField(blank=True, null=True)
-    description = models.TextField(blank=True, null=True)
+    polygon = models.TextField(blank=True, null=True)
     student = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True)
-    marker = models.ForeignKey('Marker', models.DO_NOTHING, blank=True, null=True)
     createtime = models.DateTimeField(blank=True, null=True)
+    enable = models.IntegerField(blank=True, null=True)
+    event_type = models.IntegerField(blank=True, null=True)
 
     class Meta:
         managed = False
         db_table = 'event'
 
-
-class Issue(models.Model):
-    issue_id = models.AutoField(primary_key=True)
-    description = models.TextField(blank=True, null=True)
-    imageurl = models.TextField(blank=True, null=True)
+class EventBookmark(models.Model):
+    event_bookmark_event = models.OneToOneField(Event, models.DO_NOTHING, primary_key=True)
+    event_bookmark_student = models.ForeignKey('User', models.DO_NOTHING)
     createtime = models.DateTimeField(blank=True, null=True)
-    issue_user = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True)
-    issue_marker = models.ForeignKey('Marker', models.DO_NOTHING, blank=True, null=True)
-    issue_approve_admin_username = models.ForeignKey(Admin, models.DO_NOTHING, db_column='issue_approve_admin_username',related_name='issue_approve_admin_username', blank=True, null=True)
-    issue_broadcast_admin_username = models.ForeignKey(Admin, models.DO_NOTHING, db_column ='issue_broadcast_admin_username',related_name='issue_broadcast_admin_username', blank=True, null=True)
-    broadcasttime = models.DateTimeField(blank=True, null=True)
-    approvetime = models.DateTimeField(blank=True, null=True)
 
     class Meta:
         managed = False
-        db_table = 'issue'
+        db_table = 'event_bookmark'
+        unique_together = (('event_bookmark_event', 'event_bookmark_student'),)
 
+
+class EventLike(models.Model):
+    event_like_event = models.OneToOneField(Event, models.DO_NOTHING, primary_key=True)
+    event_like_student = models.ForeignKey('User', models.DO_NOTHING)
+    createtime = models.DateTimeField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'event_like'
+        unique_together = (('event_like_event', 'event_like_student'),)
+
+class EventUrl(models.Model):
+    event_url = models.OneToOneField(Event, models.DO_NOTHING, primary_key=True)
+    url = models.TextField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'event_url'
+
+class Image(models.Model):
+    image_id = models.AutoField(primary_key=True)
+    marker = models.ForeignKey('Marker', models.DO_NOTHING)
+    link = models.TextField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'image'
+
+class ImageEvent(models.Model):
+    image_id = models.AutoField(primary_key=True)
+    event = models.ForeignKey(Event, models.DO_NOTHING)
+    link = models.TextField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'image_event'
 
 class Marker(models.Model):
-    marker_id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=255, blank=True, null=True)
-    lat = models.DecimalField(max_digits=10, decimal_places=0, blank=True, null=True)
-    long = models.DecimalField(max_digits=10, decimal_places=0, blank=True, null=True)
+    place = models.CharField(max_length=255, blank=True, null=True)
+    address = models.CharField(max_length=255, blank=True, null=True)
+    latitude = models.DecimalField(max_digits=11, decimal_places=8, blank=True, null=True)
+    longitude = models.DecimalField(max_digits=11, decimal_places=8, blank=True, null=True)
     description = models.TextField(blank=True, null=True)
-    tag = models.CharField(max_length=45, blank=True, null=True)
-    imageurl = models.TextField(db_column='imageURL', blank=True, null=True)  # Field name made lowercase.
-    enable = models.IntegerField(blank=True, null=True)
-    created_admin = models.ForeignKey(Admin, models.DO_NOTHING, blank=True, null=True)
+    type = models.CharField(max_length=45, blank=True, null=True)
+    enable = models.IntegerField(default=1,blank=True, null=True)
+    createtime = models.DateTimeField(default=datetime.now(), null=True)
     created_user = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True)
-    approve_admin_username = models.ForeignKey(Admin, models.DO_NOTHING, db_column='approve_admin_username',related_name ='approve_admin_username', blank=True, null=True)
-    createtime = models.DateTimeField(blank=True, null=True)
-    approvetime = models.DateTimeField(blank=True, null=True)
 
     class Meta:
         managed = False
         db_table = 'marker'
 
-
 class MarkerLike(models.Model):
     markerlike_student = models.OneToOneField('User', models.DO_NOTHING, primary_key=True)
-    markerlike_marker = models.ForeignKey(Marker, models.DO_NOTHING)
-    createtime = models.DateTimeField(blank=True, null=True)
+    markerlike_marker = models.OneToOneField(Marker, models.DO_NOTHING)
+    createtime = models.DateTimeField(default=datetime.now(), null=True)
 
     class Meta:
         managed = False
@@ -291,25 +168,10 @@ class MarkerLike(models.Model):
         unique_together = (('markerlike_student', 'markerlike_marker'),)
 
 
-class News(models.Model):
-    news_id = models.AutoField(primary_key=True)
-    header = models.TextField(blank=True, null=True)
-    body = models.TextField(blank=True, null=True)
-    imageurl = models.TextField(blank=True, null=True)
-    createdtime = models.DateTimeField(blank=True, null=True)
-    n_created_admin_username = models.ForeignKey(Admin, models.DO_NOTHING, db_column='n_created_admin_username',related_name='n_created_admin_username', blank=True, null=True)
-    n_broadcast_admin_username = models.ForeignKey(Admin, models.DO_NOTHING, db_column="n_broadcast_admin_username",related_name ='n_broadcast_admin_username', blank=True, null=True)
-    broadcasttime = models.DateTimeField(blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'news'
-
-
 class Permission(models.Model):
     permission_id = models.AutoField(primary_key=True)
     permission_student = models.ForeignKey('User', models.DO_NOTHING, blank=True, null=True)
-    createtime = models.DateTimeField(blank=True, null=True)
+    createtime = models.DateTimeField(default=datetime.now(), null=True)
 
     class Meta:
         managed = False
@@ -323,4 +185,36 @@ class PermissionMarker(models.Model):
     class Meta:
         managed = False
         db_table = 'permission_marker'
+
+class ReportEvent(models.Model):
+    report_event_id = models.AutoField(primary_key=True)
+    event = models.ForeignKey(Event, models.DO_NOTHING)
+    reason = models.CharField(max_length=255, blank=True, null=True)
+    details = models.CharField(max_length=450, blank=True, null=True)
+    created_user = models.ForeignKey('User', models.DO_NOTHING, db_column='created_user')
+    created_time = models.DateTimeField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'report_event'
+
+
+class ReportMarker(models.Model):
+    report_marker_id = models.AutoField(primary_key=True)
+    id = models.ForeignKey(Marker, models.DO_NOTHING, db_column='id')
+    reason = models.CharField(max_length=255, blank=True, null=True)
+    details = models.CharField(max_length=450, blank=True, null=True)
+    created_user = models.ForeignKey('User', models.DO_NOTHING, db_column='created_user')
+    created_time = models.DateTimeField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'report_marker'
+
+
+
+
+
+
+
 
